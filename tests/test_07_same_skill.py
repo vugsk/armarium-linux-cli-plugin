@@ -37,6 +37,14 @@ class TestSameSkill(unittest.TestCase):
             with self.subTest(expected=expected, called=called):
                 self.assertEqual(rt.same_skill(expected, called), answer)
 
+    def test_select_queries(self):
+        # Фильтр запросов по скиллу (`--skill`) вместо отдельной команды `python3 -c` (находка 2).
+        rt = load_run_trigger()
+        items = [{"skill": "a", "query": "1"}, {"skill": "b", "query": "2"}, {"skill": "a", "query": "3"}]
+        self.assertEqual([x["query"] for x in rt.select_queries(items, "a")], ["1", "3"])
+        self.assertEqual(rt.select_queries(items, None), items)       # без имени возвращаются все запросы
+        self.assertEqual(rt.select_queries(items, "нет"), [])
+
     def test_plugin_args_cover_all_skills(self):
         rt = load_run_trigger()
         args = rt.plugin_args()

@@ -22,9 +22,9 @@ PLUGIN = Path(__file__).resolve().parents[1]
 SCRIPT = PLUGIN / "tools/make_vault_copy.py"
 
 
-def run_script(home: Path) -> subprocess.CompletedProcess:
+def run_script(home: Path, *flags: str) -> subprocess.CompletedProcess:
     env = {**os.environ, "HOME": str(home)}
-    return subprocess.run([sys.executable, "-I", str(SCRIPT)], capture_output=True, text=True, env=env, timeout=120)
+    return subprocess.run([sys.executable, "-I", str(SCRIPT), *flags], capture_output=True, text=True, env=env, timeout=120)
 
 
 def same_tree(left: Path, right: Path) -> bool:
@@ -48,8 +48,8 @@ class TestMakeVaultCopy(unittest.TestCase):
     def settings(self, content: str):
         (self.home / ".claude" / "armarium.json").write_text(content, encoding="utf-8")
 
-    def assert_fails(self, text: str):
-        result = run_script(self.home)
+    def assert_fails(self, text: str, *flags: str):
+        result = run_script(self.home, *flags)
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn(text, result.stderr)
         self.assertEqual(list(self.vault.iterdir()), [], "при ошибке в хранилище ничего не должно появиться")
@@ -63,9 +63,25 @@ class TestMakeVaultCopy(unittest.TestCase):
         self.settings("не json")
         self.assert_fails("не является корректным JSON")
 
+    def test_requires_yes(self):
+        # Находка 4: без флага --yes скрипт только показывает, что заменит, и ничего не записывает.
+        self.settings(json.dumps({"version": 1, "vault": str(self.vault)}))
+        self.assert_fails("--yes")                                              # без флага: сообщение и пустое хранилище
+
+    def test_suspicious_vault(self):
+        # Находка 5: корень диска и домашняя папка целиком отклоняются как подозрительные (даже с --yes).
+        self.settings(json.dumps({"version": 1, "vault": str(self.home)}))
+        result = run_script(self.home, "--yes")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("подозрителен", result.stderr)
+        self.settings(json.dumps({"version": 1, "vault": "/"}))
+        result = run_script(self.home, "--yes")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("подозрителен", result.stderr)
+
     def test_copy_equals_plugin(self):
         self.settings(json.dumps({"version": 1, "vault": str(self.vault)}))
-        result = run_script(self.home)
+        result = run_script(self.home, "--yes")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         copy = self.vault / "Документация" / "Скиллы Claude" / "Копия"
         self.assertTrue(copy.is_dir())

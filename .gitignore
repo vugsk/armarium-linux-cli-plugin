@@ -1,3 +1,12 @@
 results.json
 __pycache__/
 *.pyc
+
+# Секреты: случайно созданные файлы с ключами и токенами не должны попасть в историю git (находка 8).
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets*
+credentials*

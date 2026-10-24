@@ -40,7 +40,15 @@ class TestWizard(unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp, True)
         # Копия настоящего файла (если он есть) и его контрольная сумма: по ним проверяем возврат.
-        self.backup = self.tmp / "armarium.json.real"
+        # Копия лежит рядом с настоящим файлом, а не во временной папке: если процесс убьют, она не пропадёт при очистке
+        # временных файлов (находка 7).
+        self.backup = SETTINGS.with_name("armarium.json.test-backup")
+        if self.backup.exists():
+            # Остался файл от прерванного прогона: настройки могли остаться убранными. Возвращаем их, если файла нет,
+            # но дальше не идём: человек должен сам проверить состояние.
+            if not SETTINGS.exists():
+                shutil.copy2(self.backup, SETTINGS)
+            self.fail(f"Найден файл {self.backup} от прерванного прогона. Проверьте {SETTINGS} и удалите эту копию.")
         self.had = SETTINGS.exists()
         self.before = sha(SETTINGS) if self.had else None
         if self.had:
@@ -63,6 +71,7 @@ class TestWizard(unittest.TestCase):
         if self.had:
             shutil.copy2(self.backup, SETTINGS)
             self.assertEqual(sha(SETTINGS), self.before, f"файл настроек не восстановлен, копия: {self.backup}")
+            self.backup.unlink()   # возврат подтверждён контрольной суммой: копия больше не нужна
 
     def wizard(self, answers: str) -> str:
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}

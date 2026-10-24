@@ -47,5 +47,5 @@ fi
 # Напоминание для Claude. Папку копии показываем, если знаем хранилище.
 COPY="<корень хранилища>/Документация/Скиллы Claude"
 [ -n "$VAULT" ] && COPY="$VAULT/Документация/Скиллы Claude"
-MSG="Изменён стандарт или скилл ($FILE). Напомни пользователю: 1) предложить прогнать скилл standards-audit (команда /armarium:audit); 2) обновить резервную копию в $COPY (python3 -I $PLUGIN_ROOT/tools/make_vault_copy.py). Не запускай сам без согласия пользователя."
+MSG="Изменён стандарт или скилл ($FILE). Напомни пользователю: 1) предложить прогнать скилл standards-audit (команда /armarium:run-audit); 2) обновить резервную копию в $COPY (python3 -I $PLUGIN_ROOT/tools/make_vault_copy.py --yes). Не запускай сам без согласия пользователя."
 jq -n --arg m "$MSG" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$m}}'

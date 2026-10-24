@@ -6,7 +6,7 @@
 вызовах инструментов. Сравниваем с ожиданием из файла запросов.
 
 Использование (из этой папки):
-    python3 -I run_trigger.py queries.json 4 results.json [--plugin-mode] [дополнительные флаги claude]
+    python3 -I run_trigger.py queries.json 4 results.json [--plugin-mode] [--skill ИМЯ] [дополнительные флаги claude]
 
     queries.json   — список запросов (формат ниже)
     4              — сколько запросов выполнять параллельно
@@ -14,6 +14,8 @@
     --plugin-mode  — запуск в режиме плагина: подключить этот плагин (--plugin-dir) и скрыть оригиналы
                      из ~/.claude/skills через skillOverrides, чтобы скиллы не задваивались
                      (способ проверен 2026-10-24, см. заметку вехи 2 проекта armarium)
+    --skill ИМЯ    — взять из файла запросов только запросы этого скилла (так фильтр запросов делается внутри
+                     скрипта, а не отдельной командой python3 -c: см. находку 2 заметки «Безопасность»)
     остальное      — всё, что идёт после, передаётся команде `claude` как есть
                      (например, --model sonnet)
 
@@ -31,6 +33,7 @@
 import json
 import os
 import select
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -38,13 +41,11 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-# Папка, в которой запускаем claude: пустая, чтобы в ней не было ни проектных скиллов,
-# ни файлов, влияющих на выбор (установленные плагины и пользовательские скиллы при этом видны).
 HERE = Path(__file__).resolve().parent
-# Пустая рабочая папка во временной директории системы, а не рядом со скриптом:
-# так в хранилище Obsidian не появляется лишних файлов.
-CWD = Path(tempfile.gettempdir()) / "skills-check-cwd"
-CWD.mkdir(exist_ok=True)
+# Рабочая папка для claude создаётся при каждом запуске скрипта заново (см. main): пустая, чтобы в ней не было
+# ни проектных скиллов, ни файлов, влияющих на выбор (установленные плагины и пользовательские скиллы при этом
+# видны). Имя случайное и папка закрытая (права только у владельца): фиксированное общее имя в /tmp позволило бы
+# другому пользователю машины заранее подготовить папку с чужим `.claude/` или `CLAUDE.md` (находка 3).
 
 TIMEOUT = 150   # сколько секунд ждём один запрос, потом считаем, что скилл не вызван
 MAX_TOOLS = 3   # смотрим только первые три вызова инструментов: скилл вызывают в начале
@@ -74,10 +75,16 @@ def same_skill(expected: str, called: str) -> bool:
     return called.split(":")[-1] == expected
 
 
-def run_query(query: str, extra: list[str]) -> dict:
+def select_queries(items: list[dict], skill: str | None) -> list[dict]:
+    """Оставляет запросы одного скилла; без имени (None) возвращает все запросы."""
+    return [it for it in items if skill is None or it["skill"] == skill]
+
+
+def run_query(query: str, extra: list[str], cwd: Path) -> dict:
     """Запускает один запрос и возвращает, какие скиллы и инструменты были вызваны.
 
     extra — дополнительные флаги для claude (например, из plugin_args()).
+    cwd — пустая рабочая папка, в которой запускается claude.
     """
     cmd = [
         "claude", "-p", query,
@@ -88,7 +95,7 @@ def run_query(query: str, extra: list[str]) -> dict:
     ]
     # Переменную CLAUDECODE убираем, иначе вложенный запуск claude внутри сеанса claude отказывается работать.
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=CWD, env=env)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=cwd, env=env)
 
     skills: list[str] = []   # имена вызванных скиллов
     tools: list[str] = []    # имена всех вызванных инструментов
@@ -161,19 +168,33 @@ def main() -> None:
     workers = int(sys.argv[2]) if len(sys.argv) > 2 else 4
     out_path = Path(sys.argv[3]) if len(sys.argv) > 3 else HERE / "results.json"
 
-    # Всё после третьего аргумента — флаги для claude. Слово --plugin-mode раскрываем сами
-    # (подключение плагина и скрытие оригиналов), остальные флаги передаём без изменений.
+    # Всё после третьего аргумента — флаги. Слово --plugin-mode раскрываем сами (подключение плагина и
+    # скрытие оригиналов), --skill ИМЯ используем сами (фильтр запросов), остальные передаём claude без изменений.
     extra: list[str] = []
-    for arg in sys.argv[4:]:
+    only_skill = None
+    rest = iter(sys.argv[4:])
+    for arg in rest:
         if arg == "--plugin-mode":
             extra += plugin_args()
+        elif arg == "--skill":
+            only_skill = next(rest, None)            # значение идёт следующим аргументом
+            if not only_skill:
+                sys.exit("После --skill нужно имя скилла.")
         else:
             extra.append(arg)
+    items = select_queries(items, only_skill)
+    if not items:
+        sys.exit(f"В файле запросов нет запросов для скилла {only_skill!r}.")
     print("Режим --plugin-mode:", "да (плагин из папки, оригиналы скрыты)" if "--plugin-dir" in extra else "нет (установленные плагины и скиллы пользователя как есть)")
 
-    # Выполняем запросы параллельно; результат объединяем с исходным описанием запроса.
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        results = list(ex.map(lambda it: {**run_query(it["query"], extra), **it}, items))
+    # Пустая рабочая папка со случайным именем и правами только у владельца; удаляется в конце в любом случае.
+    cwd = Path(tempfile.mkdtemp(prefix="skills-check-"))
+    try:
+        # Выполняем запросы параллельно; результат объединяем с исходным описанием запроса.
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            results = list(ex.map(lambda it: {**run_query(it["query"], extra, cwd), **it}, items))
+    finally:
+        shutil.rmtree(cwd, ignore_errors=True)
     out_path.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
 
     passed_total = 0
