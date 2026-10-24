@@ -323,5 +323,45 @@
     "skill": "project-retro",
     "should_trigger": false,
     "query": "Перейдём к этапу 3 по проекту adhide."
+  },
+  {
+    "skill": "setup",
+    "should_trigger": true,
+    "query": "настрой armarium, это мой первый запуск"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": true,
+    "query": "у меня нет файла настроек armarium.json, что делать"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": true,
+    "query": "создай мне стандарты проектов, я никогда их не вёл"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": true,
+    "query": "не могу найти свои стандарты, помоги настроить хранилище obsidian для плагина armarium"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": true,
+    "query": "первый запуск плагина: где указать путь к моему хранилищу и как создать файл настроек"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": false,
+    "query": "как назвать репозиторий для утилиты на rust"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": false,
+    "query": "на каком этапе мой проект и что дальше по плану"
+  },
+  {
+    "skill": "setup",
+    "should_trigger": false,
+    "query": "создай заготовку репозитория для проекта на python"
   }
 ]
