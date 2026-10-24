@@ -161,14 +161,13 @@ def main() -> None:
              "- `Проверки/` — сохранённый набор проверок скиллов (срабатывание, пробные данные, сценарии).", "",
              "## Скиллы", ""] + rows + ["",
              "## Как обновить копию",
-             "После правки скилла в плагине (или в `~/.claude/skills`, пока плагин не включён) выполни "
-             "`python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/import_user_skills.py` (переносит правки из `~/.claude/skills` в плагин, "
-             "нужно только пока плагин не включён) и затем `python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py`. "
+             "После правки скилла или стандарта выполни "
+             "`python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py`. "
              "Расхождение копии с оригиналом `standards-audit` по умолчанию не проверяет. "
              "Команда пересборки: `python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py`.", "",
              "## Хук-напоминание",
-             "После правки стандарта (`Проекты/Стандарт*.md`) или файла в `~/.claude/skills/` (кроме `synced`) "
-             "хук PostToolUse (в плагине `hooks/hooks.json`; пока плагин не включён — в `~/.claude/settings.json`) запускает `hooks/audit-reminder.sh` плагина. "
+             "После правки стандарта (`Проекты/Стандарт*.md`) или файла в папке `skills/` плагина "
+             "хук PostToolUse (в плагине `hooks/hooks.json`) запускает `hooks/audit-reminder.sh` плагина. "
              "Он добавляет Claude напоминание: предложить `standards-audit` и обновить эту копию. Сам ничего не запускает. "
              "Копия скрипта: `Хук/audit-reminder.sh`. Просмотр и отключение: команда `/hooks`.", ""]
     (OUT / "Карта скиллов.md").write_text("\n".join(index), encoding="utf-8")

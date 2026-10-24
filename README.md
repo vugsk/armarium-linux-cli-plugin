@@ -10,7 +10,7 @@
 | `hooks/` | `audit-reminder.sh` и `hooks.json`: после правки стандарта или скилла напоминает предложить `standards-audit` и обновить копию |
 | `commands/` | `/armarium:audit` (проверка согласованности) и `/armarium:trigger-check` (проверка срабатывания скиллов, тратит токены, спрашивает подтверждение) |
 | `checks/` | набор проверок: `queries.json`, `run_trigger.py`, `make_fixtures.py`, описание и сценарии |
-| `tools/` | `make_vault_copy.py` (копия и описания в хранилище Obsidian), `import_user_skills.py` (переходный помощник) |
+| `tools/` | `make_vault_copy.py` (копия и описания в хранилище Obsidian) |
 
 Стандарты (`Стандарт по названию проектов.md`, `Стандарт по названию устройств.md`, `Стандарт проектных заметок.md`) лежат в хранилище `Book/Проекты`, не в плагине: скиллы читают их оттуда.
 
@@ -22,17 +22,13 @@
 python3 -I tools/make_vault_copy.py
 ```
 
-**Переходный период.** Пока плагин не включён, Claude Code читает скиллы из `~/.claude/skills`, и правки идут туда. После правки там сначала:
+## Как включить
 
-```
-python3 -I tools/import_user_skills.py     # перенести правки из ~/.claude/skills в плагин
-python3 -I tools/make_vault_copy.py        # затем обновить копию в хранилище
-```
+Плагин читается из папки на месте через локальный marketplace (проверено 2026-10-24 на Claude Code 2.1.310):
 
-## Как включить (когда решите)
-
-1. Проверьте плагин: `claude plugin validate ~/Projects/claude/armarium-linux-cli-plugin` (проходит) и запустите `claude --plugin-dir ~/Projects/claude/armarium-linux-cli-plugin` на пробу.
-2. Чтобы не было дублей, на время работы плагина уберите из `~/.claude/skills` те же 16 скиллов (или переименуйте папку) и удалите из `~/.claude/settings.json` ручной хук `audit-reminder.sh`, он есть в `hooks/hooks.json` плагина. Имена скиллов станут `armarium:<скилл>`.
+1. Проверьте плагин: `claude plugin validate <папка плагина>`; на пробу без установки: `claude --plugin-dir <папка плагина>`.
+2. Положите рядом файл `.claude-plugin/marketplace.json` (имя, `owner`, запись плагина с `source` «./<папка плагина>» от корня marketplace) и выполните `claude plugin marketplace add <корень marketplace>`, затем `claude plugin install armarium@<имя marketplace>`. Правки плагина видны после перезапуска сеанса или `/reload-plugins`, версию менять не нужно.
+3. Если раньше те же скиллы лежали в `~/.claude/skills`, уберите их оттуда (перенесите в архив), иначе они задвоятся. Имена скиллов станут `armarium:<скилл>`.
 
 ## Рекомендуемые плагины
 
