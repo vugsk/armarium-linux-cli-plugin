@@ -4,17 +4,48 @@
 # Если файл — один из трёх стандартов или файл внутри папки скиллов плагина, выводит JSON,
 # по которому Claude получает напоминание.
 # Во всех остальных случаях молчит и ничего не делает.
+#
+# Пути не прописаны в скрипте:
+#   * корень хранилища берётся из ~/.claude/armarium.json (поле vault, схема в docs/settings.md плагина);
+#   * папка плагина вычисляется от расположения самого скрипта.
+# Нет файла настроек или он неверный — хук молчит про стандарты (не знает, где они), но
+# продолжает следить за скиллами плагина.
 
-FILE=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty')
-[ -z "$FILE" ] && exit 0
+FILE=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty')   # путь изменённого файла из JSON хука
+[ -z "$FILE" ] && exit 0                                                    # пути нет — делать нечего
 
-STANDARDS="$HOME/Documents/disk_docs/Book/Проекты"       # три стандарта в хранилище Obsidian
-PLUGIN_SKILLS="$HOME/Projects/claude/armarium-linux-cli-plugin/skills"  # источник скиллов (плагин)
+# Папка плагина: на уровень выше папки hooks, где лежит этот скрипт.
+PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PLUGIN_SKILLS="$PLUGIN_ROOT/skills"                                         # источник скиллов (плагин)
 
+# Корень хранилища из настроек. Все ошибки глушим (2>/dev/null), результат может быть пустым.
+SETTINGS="$HOME/.claude/armarium.json"
+VAULT=""
+if [ -f "$SETTINGS" ]; then
+  VAULT=$(jq -r 'if .version == 1 then (.vault // empty) else empty end' "$SETTINGS" 2>/dev/null)
+  # Значение может начинаться с ~ (домашняя папка): заменяем вручную, bash не раскрывает ~ внутри переменной.
+  case "$VAULT" in
+    "~/"*) VAULT="$HOME/${VAULT#\~/}" ;;
+  esac
+fi
+# Папка со стандартами по фиксированной раскладке хранилища; пустая, если настроек нет.
+STANDARDS=""
+[ -n "$VAULT" ] && STANDARDS="$VAULT/Проекты"
+
+# Решаем, касается ли правка нас. Стандарты проверяем только когда папка известна.
+MATCH=0
 case "$FILE" in
-  "$STANDARDS"/Стандарт*.md | "$PLUGIN_SKILLS"/*) ;;      # стандарты и скиллы плагина — идём дальше
-  *) exit 0 ;;                                           # любой другой файл — молчим
+  "$PLUGIN_SKILLS"/*) MATCH=1 ;;
 esac
+if [ -n "$STANDARDS" ]; then
+  case "$FILE" in
+    "$STANDARDS"/Стандарт*.md) MATCH=1 ;;
+  esac
+fi
+[ "$MATCH" -eq 1 ] || exit 0    # любой другой файл — молчим
 
-MSG="Изменён стандарт или скилл ($FILE). Напомни пользователю: 1) предложить прогнать скилл standards-audit (команда /armarium:audit); 2) обновить резервную копию в Book/Документация/Скиллы Claude (python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py). Не запускай сам без согласия пользователя."
+# Напоминание для Claude. Папку копии показываем, если знаем хранилище.
+COPY="<корень хранилища>/Документация/Скиллы Claude"
+[ -n "$VAULT" ] && COPY="$VAULT/Документация/Скиллы Claude"
+MSG="Изменён стандарт или скилл ($FILE). Напомни пользователю: 1) предложить прогнать скилл standards-audit (команда /armarium:audit); 2) обновить резервную копию в $COPY (python3 -I $PLUGIN_ROOT/tools/make_vault_copy.py). Не запускай сам без согласия пользователя."
 jq -n --arg m "$MSG" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$m}}'

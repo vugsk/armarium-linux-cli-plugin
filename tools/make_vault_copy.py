@@ -3,18 +3,61 @@
 
 Источник истины — папка плагина (skills/, checks/, hooks/). Скрипт ничего не меняет в плагине:
 он только перезаписывает в хранилище папки `Копия/`, `Описания/`, `Проверки/`, `Хук/` и файл `Карта скиллов.md`
-в `Документация/Скиллы Claude/`.
+в `<корень хранилища>/Документация/Скиллы Claude/`.
+
+Корень хранилища берётся из файла настроек `~/.claude/armarium.json` (поле `vault`, схема описана
+в `docs/settings.md` плагина). Если файла нет или он неверный, скрипт печатает понятное сообщение
+и ничего не записывает.
 
 Использование:
     python3 -I make_vault_copy.py
 """
+import json
 import re
 import shutil
+import sys
 from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent   # корень плагина (рядом с папкой tools)
 SKILLS = PLUGIN / "skills"                        # источник скиллов — плагин
-OUT = Path.home() / "Documents/disk_docs/Book/Документация/Скиллы Claude"
+SETTINGS = Path.home() / ".claude" / "armarium.json"   # файл настроек пользователя
+
+
+def pretty(path: Path) -> str:
+    """Путь для текста заметок: начало с домашней папки заменяем на `~`, чтобы в тексте не было имени пользователя."""
+    try:
+        return "~/" + str(path.relative_to(Path.home()))
+    except ValueError:
+        return str(path)   # путь вне домашней папки показываем как есть
+
+
+def load_vault() -> Path:
+    """Читает из настроек корень хранилища и проверяет, что такая папка существует.
+
+    При любой проблеме печатает причину и завершает скрипт, ничего не записывая:
+    молча подставлять другой путь нельзя (можно записать копию не туда).
+    """
+    if not SETTINGS.exists():
+        sys.exit(f"Файл настроек {pretty(SETTINGS)} не найден: создай его по docs/settings.md плагина "
+                 '(например, {"version": 1, "vault": "~/Documents/Book"}).')
+    try:
+        data = json.loads(SETTINGS.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as err:
+        sys.exit(f"Файл настроек {pretty(SETTINGS)} не является корректным JSON: {err}")
+    if data.get("version") != 1:
+        sys.exit(f"В {pretty(SETTINGS)} неизвестная версия схемы: {data.get('version')!r} (ожидалась 1).")
+    vault = data.get("vault")
+    if not isinstance(vault, str) or not vault:
+        sys.exit(f"В {pretty(SETTINGS)} нет поля vault (корень хранилища Obsidian).")
+    path = Path(vault).expanduser()   # ~ в начале значения раскрывается как домашняя папка
+    if not path.is_dir():
+        sys.exit(f"Папка хранилища из настроек не найдена: {path}")
+    return path
+
+
+VAULT = load_vault()                                        # корень хранилища из настроек
+OUT = VAULT / "Документация" / "Скиллы Claude"              # фиксированная раскладка хранилища (docs/settings.md)
+PLUGIN_TXT = pretty(PLUGIN)                                 # путь плагина для текстов заметок
 
 # Встроенные скиллы, на которые наши скиллы могут ссылаться (не копируются).
 BUILTIN = ["security-review", "init", "deep-research", "claude-api", "schedule", "loop",
@@ -129,7 +172,7 @@ def main() -> None:
                      if key in joined_all]
         files = [str(p.relative_to(SKILLS / n)) for p in sorted((SKILLS / n).rglob("*")) if p.is_file()]
         lines = [f"# Скилл - {n}", "",
-                 f"Копия файлов: `Копия/{n}/` · Источник: `~/Projects/claude/armarium-linux-cli-plugin/skills/{n}/` (копия не синхронизируется сама).", "",
+                 f"Копия файлов: `Копия/{n}/` · Источник: `{PLUGIN_TXT}/skills/{n}/` (копия не синхронизируется сама).", "",
                  "## Что делает", desc, "",
                  "## Кто пишет код", MODE.get(n, "—"), "",
                  "## Какие скиллы использует"]
@@ -153,7 +196,7 @@ def main() -> None:
         u = ", ".join(f"[[Скилл - {o}]]" for o in uses[n]) or "—"
         rows.append(f"| [[Скилл - {n}]] | {PURPOSE.get(n, '')} | {u} | {MODE.get(n, '—').split('.')[0]} |")
     index = ["# Карта скиллов Claude", "",
-             "Резервная копия и описание скиллов плагина `armarium` (`~/Projects/claude/armarium-linux-cli-plugin/`, источник истины — он). "
+             f"Резервная копия и описание скиллов плагина `armarium` (`{PLUGIN_TXT}/`, источник истины — он). "
              "Источник истины для правил — стандарты в `Проекты/`; скиллы читают их, а не копируют.", "",
              "## Структура",
              "- `Описания/` — по заметке на скилл: что делает, кто пишет код, какие скиллы использует и кто использует его.",
@@ -161,10 +204,8 @@ def main() -> None:
              "- `Проверки/` — сохранённый набор проверок скиллов (срабатывание, пробные данные, сценарии).", "",
              "## Скиллы", ""] + rows + ["",
              "## Как обновить копию",
-             "После правки скилла или стандарта выполни "
-             "`python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py`. "
-             "Расхождение копии с оригиналом `standards-audit` по умолчанию не проверяет. "
-             "Команда пересборки: `python3 -I ~/Projects/claude/armarium-linux-cli-plugin/tools/make_vault_copy.py`.", "",
+             f"После правки скилла или стандарта выполни `python3 -I {PLUGIN_TXT}/tools/make_vault_copy.py`. "
+             "Расхождение копии с плагином `standards-audit` по умолчанию не проверяет.", "",
              "## Хук-напоминание",
              "После правки стандарта (`Проекты/Стандарт*.md`) или файла в папке `skills/` плагина "
              "хук PostToolUse (в плагине `hooks/hooks.json`) запускает `hooks/audit-reminder.sh` плагина. "
