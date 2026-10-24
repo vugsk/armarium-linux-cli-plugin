@@ -39,7 +39,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # Папка, в которой запускаем claude: пустая, чтобы в ней не было ни проектных скиллов,
-# ни файлов, влияющих на выбор (пользовательские скиллы из ~/.claude/skills при этом видны).
+# ни файлов, влияющих на выбор (установленные плагины и пользовательские скиллы при этом видны).
 HERE = Path(__file__).resolve().parent
 # Пустая рабочая папка во временной директории системы, а не рядом со скриптом:
 # так в хранилище Obsidian не появляется лишних файлов.
@@ -169,7 +169,7 @@ def main() -> None:
             extra += plugin_args()
         else:
             extra.append(arg)
-    print("Режим плагина:", "да" if "--plugin-dir" in extra else "нет (скиллы из ~/.claude/skills)")
+    print("Режим --plugin-mode:", "да (плагин из папки, оригиналы скрыты)" if "--plugin-dir" in extra else "нет (установленные плагины и скиллы пользователя как есть)")
 
     # Выполняем запросы параллельно; результат объединяем с исходным описанием запроса.
     with ThreadPoolExecutor(max_workers=workers) as ex:
