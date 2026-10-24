@@ -1,3 +1,5 @@
+**Русский** | [English](README.en.md) | [日本語](README.ja.md)
+
 # СВОД-1
 
 **СВОД-1** (SVOD-1) — Стандарты, Версии, Описания, Дисциплина. Техническое имя: `armarium-linux-cli-plugin`.
