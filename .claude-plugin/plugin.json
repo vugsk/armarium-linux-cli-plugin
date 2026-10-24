@@ -5,5 +5,7 @@
   "author": {
     "name": "vugsk"
   },
+  "homepage": "https://github.com/vugsk/armarium-linux-cli-plugin",
+  "repository": "https://github.com/vugsk/armarium-linux-cli-plugin",
   "license": "MIT"
 }
