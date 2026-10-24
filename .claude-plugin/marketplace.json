@@ -1,0 +1,12 @@
+{
+  "name": "vugsk-plugins",
+  "description": "Плагин armarium (СВОД-1) для Claude Code",
+  "owner": { "name": "vugsk" },
+  "plugins": [
+    {
+      "name": "armarium",
+      "source": "./",
+      "description": "СВОД-1: скиллы по личным стандартам проектов, хук-напоминание про аудит, ручные запуски проверок"
+    }
+  ]
+}
