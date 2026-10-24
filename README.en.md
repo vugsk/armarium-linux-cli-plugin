@@ -62,6 +62,22 @@ You can use SVOD-1 together with these plugins from the official catalog `claude
 
 Install: `claude plugin install <name>@claude-plugins-official`. Installed plugins are listed by `claude plugin list`.
 
+## How many tokens the plugin takes
+
+This is the starting context of a session: how many tokens Claude receives before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-25 with Claude Code 2.1.310 by running `claude -p "Ответь одним словом: ok"` ("Answer in one word: ok") with `--setting-sources project` (user settings and installed plugins are not loaded), three runs per configuration; the values matched in every run.
+
+| Configuration | Tokens at session start | Difference from "no plugins" |
+| --- | --- | --- |
+| No plugins | 15,150 | — |
+| SVOD-1 only (19 skills) | 19,994 | +4,844 (+32%) |
+| SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 21,977 | +6,827 (+45%) |
+
+- The recommended plugins add about 2,000 more tokens on top of SVOD-1. Separate measurements: SVOD-1 + `context7` only — 21,977, SVOD-1 + the other six (language servers and `security-guidance`) — 21,687. These numbers do not add up (together they give the same as `context7` alone); I did not find out why, so only the figure for all plugins together is reliable.
+- The model's context window in this measurement is 1,000,000 tokens, so SVOD-1 takes about 0.5% of the window.
+- This is only the start of a session. The text of a skill (the body of `SKILL.md` and its references) is loaded when the skill triggers and is not in the table; its cost depends on the skill and the task.
+- Not measured: cost in money and usage on typical tasks. Cached tokens are cheaper, but that depends on your plan.
+- Your personal `CLAUDE.md` and memory may be included equally in all three values, so it is more reliable to look at the difference than at the absolute numbers.
+
 ## Known limitations
 
 - The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (`Проекты/`, `Документация/Скиллы Claude/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
