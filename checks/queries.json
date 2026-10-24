@@ -1,0 +1,327 @@
+[
+  {
+    "skill": "naming-standards",
+    "should_trigger": true,
+    "query": "хочу сделать утилиту для синхронизации заметок между телефоном и пк на linux, как мне назвать репозиторий"
+  },
+  {
+    "skill": "naming-standards",
+    "should_trigger": true,
+    "query": "придумай кодовое слово для проекта: расширение для firefox, которое прячет рекламу на youtube"
+  },
+  {
+    "skill": "naming-standards",
+    "should_trigger": false,
+    "query": "переименуй переменную cnt в counter во всём файле main.rs"
+  },
+  {
+    "skill": "naming-standards",
+    "should_trigger": false,
+    "query": "как лучше назвать функцию, которая парсит конфиг, в стиле rust?"
+  },
+  {
+    "skill": "obsidian-notes",
+    "should_trigger": true,
+    "query": "оформи заметку про архитектуру нового tui-проекта и нарисуй схему, положи в хранилище"
+  },
+  {
+    "skill": "obsidian-notes",
+    "should_trigger": true,
+    "query": "разложи заметки в папке Проекты по подпапкам и сделай заметку-карту"
+  },
+  {
+    "skill": "obsidian-notes",
+    "should_trigger": false,
+    "query": "напиши README.md для моей rust-библиотеки"
+  },
+  {
+    "skill": "obsidian-notes",
+    "should_trigger": false,
+    "query": "сделай презентацию на 5 слайдов про мой проект"
+  },
+  {
+    "skill": "hw-board-check",
+    "should_trigger": true,
+    "query": "я закончил разводку платы в kicad, всё ли готово, чтобы заказать на jlcpcb"
+  },
+  {
+    "skill": "hw-board-check",
+    "should_trigger": true,
+    "query": "проверь репозиторий keybrd-stm-dev, не забыл ли я обновить паспорт перед выпуском ревизии rB"
+  },
+  {
+    "skill": "hw-board-check",
+    "should_trigger": false,
+    "query": "как работает ШИМ на stm32, объясни"
+  },
+  {
+    "skill": "hw-board-check",
+    "should_trigger": false,
+    "query": "подбери резистор для светодиода на 3.3В, ток 10мА"
+  },
+  {
+    "skill": "project-scaffold",
+    "should_trigger": true,
+    "query": "с чего начать новый репозиторий для бота, который шлёт уведомления из github в телеграм"
+  },
+  {
+    "skill": "project-scaffold",
+    "should_trigger": true,
+    "query": "создаю заготовку проекта на rust, что нужно положить в репозиторий кроме кода"
+  },
+  {
+    "skill": "project-scaffold",
+    "should_trigger": false,
+    "query": "добавь в main.rs обработку ошибки при чтении файла"
+  },
+  {
+    "skill": "project-scaffold",
+    "should_trigger": false,
+    "query": "объясни разницу между merge и rebase"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "как поднять версию и поставить тег перед релизом, у меня теги вида g1-v1.2.3"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "настроить release-please чтобы он сам открывал pr с changelog"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": false,
+    "query": "с чего начать новый репозиторий и какие файлы туда положить"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": false,
+    "query": "как отменить последний коммит, не потеряв изменения"
+  },
+  {
+    "skill": "firmware-esp-stm",
+    "should_trigger": true,
+    "query": "esp32 ничего не отправляет по uart, на осциллографе тишина, что проверить"
+  },
+  {
+    "skill": "firmware-esp-stm",
+    "should_trigger": true,
+    "query": "как настроить таймер на stm32, чтобы он дёргал прерывание раз в миллисекунду"
+  },
+  {
+    "skill": "firmware-esp-stm",
+    "should_trigger": false,
+    "query": "подбери конденсатор развязки по питанию для esp32"
+  },
+  {
+    "skill": "firmware-esp-stm",
+    "should_trigger": false,
+    "query": "как сделать uart-клиент на python через pyserial"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "хочу сделать новую программу для учёта расходов под linux, давай начнём проект и разберёмся, с чего начать"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "на каком этапе у меня проект adhide и что делать дальше"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "обнови статус проекта: закончил планирование, дальше реализация"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "добавь в проект открытый вопрос: как хранить токен бота, варианты — переменная окружения или файл"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "как вшить версию в сборку cmake-проекта"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "как назвать репозиторий для телеграм-бота, который пересылает письма"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "объясни, как работает borrow checker в rust"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "какой .gitignore положить в новый репозиторий на rust"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "объясни borrow checker"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "почему не компилируется: cannot borrow `v` as mutable because it is also borrowed as immutable"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "как в c++ работает move-семантика, не понимаю, когда вызывается перемещающий конструктор"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "напиши мне функцию на python, которая парсит конфиг для моего бота"
+  },
+  {
+    "skill": "repo-init",
+    "should_trigger": true,
+    "query": "создай заготовку репозитория для проекта на rust: README, .gitignore и hello world"
+  },
+  {
+    "skill": "repo-init",
+    "should_trigger": true,
+    "query": "наполни README проекта по моим заметкам, скоро релиз"
+  },
+  {
+    "skill": "repo-init",
+    "should_trigger": false,
+    "query": "объясни, зачем нужен .gitignore и что в него класть"
+  },
+  {
+    "skill": "test-plan",
+    "should_trigger": true,
+    "query": "давай протестируем проект, напиши тесты и запусти их, потом запиши результаты в заметки"
+  },
+  {
+    "skill": "test-plan",
+    "should_trigger": true,
+    "query": "какие тесты нужны для моего телеграм-бота перед релизом"
+  },
+  {
+    "skill": "test-plan",
+    "should_trigger": false,
+    "query": "объясни, как в rust пишутся юнит-тесты и чем они отличаются от интеграционных"
+  },
+  {
+    "skill": "standards-audit",
+    "should_trigger": true,
+    "query": "проверь, не разошлись ли мои стандарты и скиллы"
+  },
+  {
+    "skill": "standards-audit",
+    "should_trigger": false,
+    "query": "какие теги ставить у релиза версии 1.0.0 для моего проекта"
+  },
+  {
+    "skill": "dependency-audit",
+    "should_trigger": true,
+    "query": "какую библиотеку для работы с json на rust лучше взять, чтобы без уязвимостей"
+  },
+  {
+    "skill": "dependency-audit",
+    "should_trigger": true,
+    "query": "проверь зависимости моего проекта на CVE перед релизом"
+  },
+  {
+    "skill": "dependency-audit",
+    "should_trigger": false,
+    "query": "объясни, как работают features в cargo"
+  },
+  {
+    "skill": "dependency-audit",
+    "should_trigger": false,
+    "query": "какую лицензию выбрать для моего проекта"
+  },
+  {
+    "skill": "project-security",
+    "should_trigger": true,
+    "query": "проверь мой проект на уязвимости, нет ли секретов в репозитории"
+  },
+  {
+    "skill": "project-security",
+    "should_trigger": true,
+    "query": "готов ли мой телеграм-бот к публичному релизу с точки зрения безопасности"
+  },
+  {
+    "skill": "project-security",
+    "should_trigger": false,
+    "query": "помоги найти, почему моя программа на c++ падает с segfault"
+  },
+  {
+    "skill": "reverse-engineering",
+    "should_trigger": true,
+    "query": "помоги разобрать бинарный формат дампа прошивки моего собственного устройства"
+  },
+  {
+    "skill": "reverse-engineering",
+    "should_trigger": true,
+    "query": "хочу понять, как устроен протокол обмена моего устройства с приложением, у меня есть дамп трафика"
+  },
+  {
+    "skill": "reverse-engineering",
+    "should_trigger": false,
+    "query": "как собрать проект на cmake с несколькими целями"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "как лучше отлаживать падение программы на c++, с чего начать"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "хочу написать свой маленький язык программирования, с чего начать и что почитать"
+  },
+  {
+    "skill": "hw-design-coach",
+    "should_trigger": true,
+    "query": "как подключить кварц и цепь сброса к stm32 на моей плате"
+  },
+  {
+    "skill": "hw-design-coach",
+    "should_trigger": true,
+    "query": "какой стабилизатор взять для питания платы на esp32 и как посчитать бюджет питания"
+  },
+  {
+    "skill": "hw-design-coach",
+    "should_trigger": false,
+    "query": "проверь мою плату перед заказом на jlcpcb"
+  },
+  {
+    "skill": "hw-board-check",
+    "should_trigger": true,
+    "query": "плата готова, проверь ее на требования производства перед заказом, вот ссылка на их правила"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "составь план проекта: разбей на вехи и задачи"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "предложи сообщение коммита для этих изменений: добавил поиск по названию"
+  },
+  {
+    "skill": "project-retro",
+    "should_trigger": true,
+    "query": "Замораживаю проект adhide, нет времени. Давай подведём итоги."
+  },
+  {
+    "skill": "project-retro",
+    "should_trigger": true,
+    "query": "Проект выпущен, хочу записать, чему я научился и что сделал бы иначе."
+  },
+  {
+    "skill": "project-retro",
+    "should_trigger": false,
+    "query": "Перейдём к этапу 3 по проекту adhide."
+  }
+]
