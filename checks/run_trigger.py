@@ -6,11 +6,19 @@
 вызовах инструментов. Сравниваем с ожиданием из файла запросов.
 
 Использование (из этой папки):
-    python3 -I run_trigger.py queries.json 4 results.json
+    python3 -I run_trigger.py queries.json 4 results.json [--plugin-mode] [дополнительные флаги claude]
 
-    queries.json  — список запросов (формат ниже)
-    4             — сколько запросов выполнять параллельно
-    results.json  — куда записать подробный результат
+    queries.json   — список запросов (формат ниже)
+    4              — сколько запросов выполнять параллельно
+    results.json   — куда записать подробный результат
+    --plugin-mode  — запуск в режиме плагина: подключить этот плагин (--plugin-dir) и скрыть оригиналы
+                     из ~/.claude/skills через skillOverrides, чтобы скиллы не задваивались
+                     (способ проверен 2026-10-24, см. заметку вехи 2 проекта armarium)
+    остальное      — всё, что идёт после, передаётся команде `claude` как есть
+                     (например, --model sonnet)
+
+Имена скиллов сравниваются без префикса плагина: в режиме плагина вызывается `armarium:code-coach`,
+а в файле запросов ожидается `code-coach`, и это считается совпадением.
 
 Формат queries.json — список объектов:
     {"skill": "имя скилла", "should_trigger": true/false, "query": "текст запроса"}
@@ -42,13 +50,41 @@ TIMEOUT = 150   # сколько секунд ждём один запрос, п
 MAX_TOOLS = 3   # смотрим только первые три вызова инструментов: скилл вызывают в начале
 
 
-def run_query(query: str) -> dict:
-    """Запускает один запрос и возвращает, какие скиллы и инструменты были вызваны."""
+def plugin_args() -> list[str]:
+    """Флаги claude для режима плагина: подключить плагин и скрыть оригиналы его скиллов.
+
+    Плагин лежит на уровень выше этой папки (checks/ — внутри плагина). Без отключения оригиналов
+    из ~/.claude/skills в списке скиллов оказались бы и они, и скиллы плагина с префиксом, и модель
+    могла бы вызвать оригинал, тогда проверка ничего не доказывала бы.
+    """
+    root = HERE.parent
+    # Имена скиллов — это имена папок плагина со SKILL.md; ровно такие имена и у оригиналов.
+    names = sorted(p.name for p in (root / "skills").iterdir() if (p / "SKILL.md").exists())
+    # skillOverrides со значением "off" скрывает скилл от Claude, но файлы на диске не трогает.
+    settings = json.dumps({"skillOverrides": {name: "off" for name in names}})
+    return ["--plugin-dir", str(root), "--settings", settings]
+
+
+def same_skill(expected: str, called: str) -> bool:
+    """Совпадает ли вызванный скилл с ожидаемым, не считая префикса плагина.
+
+    `armarium:code-coach` и `code-coach` — один и тот же скилл. Префикс отделён двоеточием,
+    поэтому берём часть после последнего двоеточия.
+    """
+    return called.split(":")[-1] == expected
+
+
+def run_query(query: str, extra: list[str]) -> dict:
+    """Запускает один запрос и возвращает, какие скиллы и инструменты были вызваны.
+
+    extra — дополнительные флаги для claude (например, из plugin_args()).
+    """
     cmd = [
         "claude", "-p", query,
         "--output-format", "stream-json",   # события построчно в формате JSON
         "--verbose",
         "--include-partial-messages",       # чтобы увидеть вызов инструмента как можно раньше
+        *extra,
     ]
     # Переменную CLAUDECODE убираем, иначе вложенный запуск claude внутри сеанса claude отказывается работать.
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
@@ -125,14 +161,25 @@ def main() -> None:
     workers = int(sys.argv[2]) if len(sys.argv) > 2 else 4
     out_path = Path(sys.argv[3]) if len(sys.argv) > 3 else HERE / "results.json"
 
+    # Всё после третьего аргумента — флаги для claude. Слово --plugin-mode раскрываем сами
+    # (подключение плагина и скрытие оригиналов), остальные флаги передаём без изменений.
+    extra: list[str] = []
+    for arg in sys.argv[4:]:
+        if arg == "--plugin-mode":
+            extra += plugin_args()
+        else:
+            extra.append(arg)
+    print("Режим плагина:", "да" if "--plugin-dir" in extra else "нет (скиллы из ~/.claude/skills)")
+
     # Выполняем запросы параллельно; результат объединяем с исходным описанием запроса.
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        results = list(ex.map(lambda it: {**run_query(it["query"]), **it}, items))
+        results = list(ex.map(lambda it: {**run_query(it["query"], extra), **it}, items))
     out_path.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
 
     passed_total = 0
     for r in results:
-        triggered = r["skill"] in r["skills"]
+        # Совпадение считаем без префикса плагина (armarium:code-coach == code-coach).
+        triggered = any(same_skill(r["skill"], called) for called in r["skills"])
         # Ожидали срабатывание — должен был вызваться именно этот скилл;
         # не ожидали — этот скилл не должен был вызваться.
         passed = triggered if r["should_trigger"] else not triggered
