@@ -18,7 +18,7 @@
 
 ## 必要なもの
 
-Linux 上の Claude Code 2.1.310 で動作を確認しました。`python3`、`bash`、`jq`、`git`、`claude` が必要です。外部ライブラリはありません(Python の標準ライブラリのみ)。
+Linux 上の Claude Code 2.1.310 で動作を確認しました。**Windows はサポートしていません**(作者の決定、2026-10-25。フックは bash と `jq` で書かれており、起動チェックは Linux の仕組みを使うため Windows では動きません)。macOS は未確認です。`python3`、`bash`、`jq`、`git`、`claude` が必要です。外部ライブラリはありません(Python の標準ライブラリのみ)。
 
 ## 内容
 

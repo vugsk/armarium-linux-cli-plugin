@@ -16,7 +16,7 @@ The plugin guides project work by your own standards: names for projects and dev
 
 ## Requirements
 
-Tested on Linux with Claude Code 2.1.310. The programs `python3`, `bash`, `jq`, `git` and `claude` are needed. The plugin has no external libraries (only the Python standard library).
+Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the author's decision, 2026-10-25; the hook is written in bash and `jq`, and the trigger check uses Linux mechanisms and will not work on Windows); macOS was not tested. The programs `python3`, `bash`, `jq`, `git` and `claude` are needed. The plugin has no external libraries (only the Python standard library).
 
 ## What is inside
 
