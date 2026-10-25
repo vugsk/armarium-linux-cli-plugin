@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Строит резервную копию, описания и карту скиллов в хранилище Obsidian ИЗ ПЛАГИНА armarium.
+"""Строит описания и карту скиллов в хранилище Obsidian ИЗ ПЛАГИНА armarium.
 
-Источник истины — папка плагина (skills/, checks/, hooks/). Скрипт ничего не меняет в плагине:
-он только перезаписывает в хранилище папки `Копия/`, `Описания/`, `Проверки/`, `Хук/` и файл `Карта скиллов.md`
-в `<корень хранилища>/Документация/Скиллы Claude/`.
+Источник истины — папка плагина (skills/) и его репозиторий. Скрипт ничего не меняет в плагине:
+он только перезаписывает в хранилище папку `Описания/` и файл `Карта скиллов.md`
+в `<корень хранилища>/Документация/Скиллы Claude/`. Копий самих скиллов, хука и набора проверок в хранилище
+больше нет (решение пользователя 2026-10-25: резервная копия — репозиторий на GitHub).
 
 Корень хранилища берётся из файла настроек `~/.claude/armarium.json` (поле `vault`, схема описана
 в `docs/settings.md` плагина). Если файла нет или он неверный, скрипт печатает понятное сообщение
@@ -21,7 +22,6 @@
 """
 import json
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -68,11 +68,9 @@ def load_vault() -> Path:
 
 def confirm_write(names: list[str]) -> None:
     """Показывает, куда скрипт будет писать и что заменит; без флага --yes на этом останавливается."""
-    # Что уже лежит в целевой папке и будет заменено (папки копии удаляются и создаются заново).
-    replaced = [OUT / "Копия" / n for n in names if (OUT / "Копия" / n).exists()]
-    replaced += [OUT / "Описания" / f"Скилл - {n}.md" for n in names if (OUT / "Описания" / f"Скилл - {n}.md").exists()]
-    replaced += [p for p in (OUT / "Карта скиллов.md", OUT / "Хук" / "audit-reminder.sh") if p.exists()]
-    replaced += [OUT / "Проверки" / f.name for f in (PLUGIN / "checks").iterdir() if f.is_file() and (OUT / "Проверки" / f.name).exists()]
+    # Что уже лежит в целевой папке и будет заменено (заметки описаний и карта пишутся заново).
+    replaced = [OUT / "Описания" / f"Скилл - {n}.md" for n in names if (OUT / "Описания" / f"Скилл - {n}.md").exists()]
+    replaced += [p for p in (OUT / "Карта скиллов.md",) if p.exists()]
     print(f"Целевая папка: {OUT}")
     print(f"Скиллов в плагине: {len(names)}; уже существует и будет заменено: {len(replaced)}")
     for path in replaced[:5]:
@@ -170,19 +168,11 @@ def first_context(text: str, name: str) -> str:
 def main() -> None:
     names = sorted(p.name for p in SKILLS.iterdir() if p.is_dir() and p.name != "synced")
     confirm_write(names)   # без --yes до этого места записи не было
-    (OUT / "Копия").mkdir(parents=True, exist_ok=True)
     (OUT / "Описания").mkdir(parents=True, exist_ok=True)
 
     texts = {n: all_text(SKILLS / n) for n in names}
 
-    # 1. Полная копия папок скиллов.
-    for n in names:
-        dst = OUT / "Копия" / n
-        if dst.exists():
-            shutil.rmtree(dst)
-        shutil.copytree(SKILLS / n, dst)
-
-    # 2. Кто на кого ссылается.
+    # 1. Кто на кого ссылается.
     uses: dict[str, dict[str, str]] = {n: {} for n in names}
     used_by: dict[str, list[str]] = {n: [] for n in names}
     builtin_uses: dict[str, dict[str, str]] = {n: {} for n in names}
@@ -196,7 +186,7 @@ def main() -> None:
             if mentions(joined, b):
                 builtin_uses[n][b] = first_context(joined, b)
 
-    # 3. Описание каждого скилла.
+    # 2. Описание каждого скилла.
     for n in names:
         skill_md = read(SKILLS / n / "SKILL.md")
         desc = frontmatter_desc(skill_md)
@@ -207,7 +197,7 @@ def main() -> None:
                      if key in joined_all]
         files = [str(p.relative_to(SKILLS / n)) for p in sorted((SKILLS / n).rglob("*")) if p.is_file()]
         lines = [f"# Скилл - {n}", "",
-                 f"Копия файлов: `Копия/{n}/` · Источник: `{PLUGIN_TXT}/skills/{n}/` (копия не синхронизируется сама).", "",
+                 f"Источник: `{PLUGIN_TXT}/skills/{n}/` (репозиторий плагина; эта заметка строится из него и не синхронизируется сама).", "",
                  "## Что делает", desc, "",
                  "## Кто пишет код", MODE.get(n, "—"), "",
                  "## Какие скиллы использует"]
@@ -225,35 +215,27 @@ def main() -> None:
         lines += ["", "## Файлы"] + [f"- `{f}`" for f in files] + [""]
         (OUT / "Описания" / f"Скилл - {n}.md").write_text("\n".join(lines), encoding="utf-8")
 
-    # 4. Карта скиллов.
+    # 3. Карта скиллов.
     rows = ["| Скилл | Назначение | Использует | Кто пишет код |", "| --- | --- | --- | --- |"]
     for n in names:
         u = ", ".join(f"[[Скилл - {o}]]" for o in uses[n]) or "—"
         rows.append(f"| [[Скилл - {n}]] | {PURPOSE.get(n, '')} | {u} | {MODE.get(n, '—').split('.')[0]} |")
     index = ["# Карта скиллов Claude", "",
-             f"Резервная копия и описание скиллов плагина `armarium` (`{PLUGIN_TXT}/`, источник истины — он). "
+             f"Описания скиллов плагина `armarium` (`{PLUGIN_TXT}/`, источник истины — он и его репозиторий на GitHub). "
              "Источник истины для правил — стандарты в `Проекты/`; скиллы читают их, а не копируют.", "",
              "## Структура",
              "- `Описания/` — по заметке на скилл: что делает, кто пишет код, какие скиллы использует и кто использует его.",
-             "- `Копия/` — точная копия папок скиллов. Синхронизируется вручную (см. ниже).",
-             "- `Проверки/` — сохранённый набор проверок скиллов (срабатывание, пробные данные, сценарии).", "",
+             "", "Копий скиллов, хука и набора проверок в хранилище нет: они только в репозитории плагина.", "",
              "## Скиллы", ""] + rows + ["",
-             "## Как обновить копию",
+             "## Как обновить описания",
              f"После правки скилла или стандарта выполни `python3 -I {PLUGIN_TXT}/tools/make_vault_copy.py --yes`. "
-             "Расхождение копии с плагином `standards-audit` по умолчанию не проверяет.", "",
+             "Расхождение описаний с плагином `standards-audit` по умолчанию не проверяет.", "",
              "## Хук-напоминание",
              "После правки стандарта (`Проекты/Стандарт*.md`) или файла в папке `skills/` плагина "
              "хук PostToolUse (в плагине `hooks/hooks.json`) запускает `hooks/audit-reminder.sh` плагина. "
-             "Он добавляет Claude напоминание: предложить `standards-audit` и обновить эту копию. Сам ничего не запускает. "
-             "Копия скрипта: `Хук/audit-reminder.sh`. Просмотр и отключение: команда `/hooks`.", ""]
+             "Он добавляет Claude напоминание: предложить `standards-audit` и обновить эти описания. Сам ничего не запускает. "
+             "Просмотр и отключение: команда `/hooks`.", ""]
     (OUT / "Карта скиллов.md").write_text("\n".join(index), encoding="utf-8")
-    # Хук и сохранённый набор проверок берём из плагина.
-    (OUT / "Хук").mkdir(exist_ok=True)
-    shutil.copy(PLUGIN / "hooks/audit-reminder.sh", OUT / "Хук/audit-reminder.sh")
-    (OUT / "Проверки").mkdir(exist_ok=True)
-    for f in (PLUGIN / "checks").iterdir():
-        if f.is_file():
-            shutil.copy(f, OUT / "Проверки" / f.name)
     print(f"Скиллов: {len(names)}; описаний: {len(list((OUT / 'Описания').glob('*.md')))}")
 
 

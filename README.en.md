@@ -24,9 +24,9 @@ Tested on Linux with Claude Code 2.1.310. The programs `python3`, `bash`, `jq`, 
 | --- | --- |
 | `skills/` | 19 skills: project names and stages, mentors for code, firmware and hardware, board check, tests, security, dependencies, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
 | `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard) |
-| `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` and refresh the copy |
+| `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` and refresh the skill descriptions in the vault |
 | `checks/` | the check set: `queries.json`, `run_trigger.py`, `make_fixtures.py`, description and scenarios |
-| `tools/` | `make_vault_copy.py` (a copy and descriptions in the Obsidian vault; needed by the plugin author) |
+| `tools/` | `make_vault_copy.py` (skill descriptions and the skill map in the Obsidian vault; needed by the plugin author) |
 | `tests/` | plugin tests (how to run them: see "For development") |
 
 The standards (`Стандарт по названию проектов.md`, `Стандарт по названию устройств.md`, `Стандарт проектных заметок.md`) live in the `Проекты/` folder of your vault (the vault root is set in `~/.claude/armarium.json`), not in the plugin: the skills read them from there.
@@ -91,7 +91,7 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 
 ## For development
 
-The source of the skills is this repository. The backup copy and the skill descriptions in the author's vault (`Документация/Скиллы Claude/` inside the vault from `~/.claude/armarium.json`) are built from it:
+The source of the skills is this repository. The skill descriptions and the skill map in the author's vault (`Документация/Скиллы Claude/` inside the vault from `~/.claude/armarium.json`) are built from it:
 
 ```
 python3 -I tools/make_vault_copy.py --yes

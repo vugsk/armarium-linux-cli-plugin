@@ -26,9 +26,9 @@ Linux 上の Claude Code 2.1.310 で動作を確認しました。`python3`、`b
 | --- | --- |
 | `skills/` | 19個のスキル:プロジェクトの命名と段階、コード・ファームウェア・ハードウェアのメンター、基板チェック、テスト、セキュリティ、依存関係、リバースエンジニアリング、プロジェクトの振り返り、標準の監査、`setup` ウィザード、手動実行の `run-audit`(整合性チェック)と `run-trigger-check`(スキルの起動チェック。アカウントのトークンを消費し、確認を求めます) |
 | `docs/` | スキル用の資料:`settings.md`(設定ファイル `~/.claude/armarium.json`)、`standards-contract.md`(ウィザードが使う標準の構造の取り決め) |
-| `hooks/` | `audit-reminder.sh` と `hooks.json`:標準やスキルを編集した後に、`standards-audit` の実行とコピーの更新を促します |
+| `hooks/` | `audit-reminder.sh` と `hooks.json`:標準やスキルを編集した後に、`standards-audit` の実行と、保管庫内のスキルの説明の更新を促します |
 | `checks/` | チェック一式:`queries.json`、`run_trigger.py`、`make_fixtures.py`、説明とシナリオ |
-| `tools/` | `make_vault_copy.py`(Obsidian の保管庫へのコピーと説明。プラグインの作者向け) |
+| `tools/` | `make_vault_copy.py`(Obsidian の保管庫へのスキルの説明とスキルの一覧。プラグインの作者向け) |
 | `tests/` | プラグインのテスト(実行方法は「開発者向け」を参照) |
 
 標準(`Стандарт по названию проектов.md`、`Стандарт по названию устройств.md`、`Стандарт проектных заметок.md`)はプラグインではなく、保管庫の `Проекты/` フォルダにあります(保管庫のルートは `~/.claude/armarium.json` で指定します)。スキルはそこから読み込みます。
@@ -93,7 +93,7 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 
 ## 開発者向け
 
-スキルの正本はこのリポジトリです。作者の保管庫にあるバックアップコピーとスキルの説明(`~/.claude/armarium.json` の保管庫内の `Документация/Скиллы Claude/`)は、ここから生成されます:
+スキルの正本はこのリポジトリです。作者の保管庫にあるスキルの説明とスキルの一覧(`~/.claude/armarium.json` の保管庫内の `Документация/Скиллы Claude/`)は、ここから生成されます:
 
 ```
 python3 -I tools/make_vault_copy.py --yes

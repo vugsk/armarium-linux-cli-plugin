@@ -1,11 +1,12 @@
-"""Тест 5: `tools/make_vault_copy.py` правильно читает настройки и строит копию в хранилище.
+"""Тест 5: `tools/make_vault_copy.py` правильно читает настройки и строит описания в хранилище.
 
-Зачем: требования Т-5 (копия и описания в хранилище строятся из плагина) и Т-8 (корень хранилища берётся из
+Зачем: требования Т-5 (описания скиллов в хранилище строятся из плагина) и Т-8 (корень хранилища берётся из
 `~/.claude/armarium.json`). Скрипт определяет домашнюю папку по переменной HOME, поэтому тест подставляет временную
 домашнюю папку и временное хранилище: ваши настоящие файлы не затрагиваются.
 Сценарии ошибок (ожидаем код возврата 1 и понятное сообщение, ничего не записано): нет файла настроек, неизвестная
 версия схемы, папки хранилища нет, файл не JSON. Сценарий успеха: код возврата 0, в хранилище создана папка
-`Документация/Скиллы Claude/Копия`, и её содержимое совпадает с папкой `skills/` плагина файл в файл.
+`Документация/Скиллы Claude/Описания` (по заметке на каждый скилл плагина) и `Карта скиллов.md`; папок `Копия`, `Хук`, `Проверки`
+скрипт не создаёт (решение пользователя 2026-10-25: копий в хранилище нет).
 Токены не тратятся.
 """
 import filecmp
@@ -79,13 +80,17 @@ class TestMakeVaultCopy(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("подозрителен", result.stderr)
 
-    def test_copy_equals_plugin(self):
+    def test_descriptions_match_skills(self):
         self.settings(json.dumps({"version": 1, "vault": str(self.vault)}))
         result = run_script(self.home, "--yes")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        copy = self.vault / "Документация" / "Скиллы Claude" / "Копия"
-        self.assertTrue(copy.is_dir())
-        self.assertTrue(same_tree(PLUGIN / "skills", copy), "копия не совпадает с папкой skills/ плагина")
+        out = self.vault / "Документация" / "Скиллы Claude"
+        skills = sorted(p.name for p in (PLUGIN / "skills").iterdir() if p.is_dir())
+        notes = sorted(p.name for p in (out / "Описания").glob("Скилл - *.md"))
+        self.assertEqual(notes, [f"Скилл - {n}.md" for n in skills], "заметки описаний не совпадают со скиллами плагина")
+        self.assertTrue((out / "Карта скиллов.md").is_file())
+        for gone in ("Копия", "Хук", "Проверки"):
+            self.assertFalse((out / gone).exists(), f"папка {gone} не должна создаваться")
 
 
 if __name__ == "__main__":
