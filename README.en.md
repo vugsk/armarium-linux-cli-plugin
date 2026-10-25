@@ -24,9 +24,8 @@ Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the auth
 | --- | --- |
 | `skills/` | 19 skills: project names and stages, mentors for code, firmware and hardware, board check, tests, security, dependencies, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
 | `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard) |
-| `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` and refresh the skill descriptions in the vault |
+| `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` |
 | `checks/` | the check set: `queries.json`, `run_trigger.py`, `make_fixtures.py`, description and scenarios |
-| `tools/` | `make_vault_copy.py` (skill descriptions and the skill map in the Obsidian vault; needed by the plugin author) |
 | `tests/` | plugin tests (how to run them: see "For development") |
 
 The standards (`Стандарт по названию проектов.md`, `Стандарт по названию устройств.md`, `Стандарт проектных заметок.md`) live in the `Проекты/` folder of your vault (the vault root is set in `~/.claude/armarium.json`), not in the plugin: the skills read them from there.
@@ -84,18 +83,14 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 
 ## Known limitations
 
-- The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (`Проекты/`, `Документация/Скиллы Claude/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
+- The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (standards and project notes in `Проекты/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
 - Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 73 queries: the last full run gave 71/73. After the descriptions of `project-stages`, `project-scaffold` and `code-coach` were reworded (2026-10-25), the two failing queries triggered 4 times out of 4, and all 19 queries of these three skills passed; the whole set has not been rerun since. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
 - The skills read files in the vault; text in them is treated as data, not as instructions (`docs/settings.md`). This was checked with two trial runs and is not proof of complete protection against injected instructions.
 - License: MIT, copyright holder `vugsk` (file `LICENSE`, field `license` in `plugin.json`).
 
 ## For development
 
-The source of the skills is this repository. The skill descriptions and the skill map in the author's vault (`Документация/Скиллы Claude/` inside the vault from `~/.claude/armarium.json`) are built from it:
-
-```
-python3 -I tools/make_vault_copy.py --yes
-```
+The source of the skills is this repository. The plugin does not create or update skill descriptions in the vault.
 
 Tests (Python standard library, no tokens spent):
 
