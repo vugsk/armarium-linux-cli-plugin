@@ -7,12 +7,18 @@
 падает с понятной ошибкой (копия остаётся во временной папке, путь в сообщении).
 ТРАТИТ ТОКЕНЫ (три запроса `claude -p`) и меняет ваш файл настроек на время прогона, поэтому по умолчанию ПРОПУСКАЕТСЯ:
 чтобы запустить, задайте переменную окружения ARMARIUM_WIZARD_TEST=1 (и не пользуйтесь Claude в других окнах на это время).
+Проверка самого теста (мутации): задайте ещё ARMARIUM_PLUGIN_DIR=<папка копии плагина со сломанным скиллом setup>; тест должен упасть.
 Сценарии (в каждом хранилище и ответы выдуманные, во временной папке):
   A. Файла настроек нет, человек отказывается его записывать: файл не создан.
   B. Файл повреждён (`не json`), человек разрешает исправить: файл стал корректным JSON с нужным vault,
      рядом создана копия `armarium.json.bak-<дата>` с повреждённым текстом.
-  C. Два стандарта уже лежат в хранилище, человек просит только настройки: стандарты не изменены (контрольные суммы),
-     файл настроек создан.
+  C. Два стандарта уже лежат в хранилище, человек просит только настройки (запрета «не трогай» в запросе нет):
+     стандарты не изменены (контрольные суммы), файл настроек создан.
+  Ограничения (мутационная проверка 2026-10-25, сломанные копии скилла `setup`): B порчу заметил (убрано правило про
+  копию .bak). A и C порчу НЕ заметили: в A просьба человека («НЕТ») совпадает с правилом скилла, в C автоматический
+  запуск не доходит до диалога о содержании стандартов (ответов нет), и путь перезаписи готовых стандартов не
+  выполняется. Эти два сценария ловят только грубое нарушение; чувствительный тест C потребовал бы заранее дать ответы
+  на все вопросы шага 4 (дороже по токенам).
 """
 import hashlib
 import json
@@ -55,6 +61,7 @@ class TestWizard(unittest.TestCase):
             shutil.copy2(SETTINGS, self.backup)
             SETTINGS.unlink()
         self.old_baks = set(SETTINGS.parent.glob("armarium.json.bak-*"))
+        self.had_plain_bak = SETTINGS.with_name("armarium.json.bak").exists()
         self.addCleanup(self.restore)
         # Выдуманное хранилище с папкой Проекты.
         self.vault = self.tmp / "vault"
@@ -68,6 +75,9 @@ class TestWizard(unittest.TestCase):
             SETTINGS.unlink()
         for bak in set(SETTINGS.parent.glob("armarium.json.bak-*")) - self.old_baks:
             bak.unlink()
+        plain_bak = SETTINGS.with_name("armarium.json.bak")   # копия без даты (так делает испорченный скилл); была ли до прогона
+        if plain_bak.exists() and not self.had_plain_bak:
+            plain_bak.unlink()
         if self.had:
             shutil.copy2(self.backup, SETTINGS)
             self.assertEqual(sha(SETTINGS), self.before, f"файл настроек не восстановлен, копия: {self.backup}")
@@ -75,7 +85,11 @@ class TestWizard(unittest.TestCase):
 
     def wizard(self, answers: str) -> str:
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
-        result = subprocess.run(["claude", "-p", INTRO + answers, "--max-turns", "25", *TOOLS],
+        # Необязательно: ARMARIUM_PLUGIN_DIR — папка плагина для пробы (например, копия со сломанным скиллом, чтобы
+        # проверить, что тест это заметит). Без переменной работает установленный плагин.
+        plugin_dir = os.environ.get("ARMARIUM_PLUGIN_DIR")
+        extra = ["--plugin-dir", plugin_dir] if plugin_dir else []
+        result = subprocess.run(["claude", "-p", INTRO + answers, "--max-turns", "25", *extra, *TOOLS],
                                 capture_output=True, text=True, cwd=self.workdir, env=env, timeout=900)
         return result.stdout
 
@@ -101,8 +115,11 @@ class TestWizard(unittest.TestCase):
         for std in standards:
             std.write_text("# готовый стандарт\n", encoding="utf-8")
         before = [sha(s) for s in standards]
-        self.wizard(f"Файла настроек нет. Соглашения прочитал. Хранилище: {self.vault}, два готовых стандарта там "
-                    "лежат, не трогай их, новые не нужны. Настройки (шаг 6): да, запиши.")
+        # Запрет «не трогай» здесь намеренно не произносится: тест должен проверять правило скилла, а не послушание
+        # явной просьбе (мутационная проверка 2026-10-25: с запретом в запросе тест не замечал порченый скилл).
+        self.wizard(f"Файла настроек нет. Соглашения прочитал. Хранилище: {self.vault}, два стандарта там уже "
+                    "лежат. Из недостающих нужен только стандарт названий устройств, но содержание его не обсуждай: "
+                    "его не создавай. Настройки (шаг 6): да, запиши.")
         self.assertEqual([sha(s) for s in standards], before, "мастер изменил готовые стандарты")
         self.assertTrue(SETTINGS.exists(), "мастер не создал файл настроек")
 
