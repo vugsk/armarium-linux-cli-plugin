@@ -64,7 +64,11 @@ Install: `claude plugin install <name>@claude-plugins-official`. Installed plugi
 
 ## How many tokens the plugin takes
 
-This is the starting context of a session: how many tokens Claude receives before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-25 with Claude Code 2.1.310 by running `claude -p "Ответь одним словом: ok"` ("Answer in one word: ok") with `--setting-sources project` (user settings and installed plugins are not loaded), three runs per configuration; the values matched in every run.
+This is how many tokens Claude receives at the start of a session, before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-25 with Claude Code 2.1.310 using the request "answer in one word: ok", three runs per configuration; the numbers matched. To repeat it, add up `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` from the `usage` field of the reply.
+
+```
+claude -p "Ответь одним словом: ok" --output-format json --setting-sources project --plugin-dir <plugin folder>
+```
 
 | Configuration | Tokens at session start | Difference from "no plugins" |
 | --- | --- | --- |
@@ -81,7 +85,7 @@ This is the starting context of a session: how many tokens Claude receives befor
 ## Known limitations
 
 - The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (`Проекты/`, `Документация/Скиллы Claude/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
-- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 73 queries: the last full run passed 71/73; two queries do not trigger reliably (`project-stages` on a request about a new expense-tracking program, `code-coach` on "write a function in python"). Run it with `/armarium:run-trigger-check` (spends tokens).
+- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 73 queries: the last full run gave 71/73. After the descriptions of `project-stages`, `project-scaffold` and `code-coach` were reworded (2026-10-25), the two failing queries triggered 4 times out of 4, and all 19 queries of these three skills passed; the whole set has not been rerun since. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
 - The skills read files in the vault; text in them is treated as data, not as instructions (`docs/settings.md`). This was checked with two trial runs and is not proof of complete protection against injected instructions.
 - License: MIT, copyright holder `vugsk` (file `LICENSE`, field `license` in `plugin.json`).
 
