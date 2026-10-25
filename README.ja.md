@@ -32,6 +32,30 @@ Linux 上の Claude Code 2.1.310 で動作を確認しました。**Windows は�
 
 標準(`Стандарт по названию проектов.md`、`Стандарт по названию устройств.md`、`Стандарт проектных заметок.md`)はプラグインではなく、保管庫の `Проекты/` フォルダにあります(保管庫のルートは `~/.claude/armarium.json` で指定します)。スキルはそこから読み込みます。
 
+## スキル一覧
+
+| スキル | 内容 |
+| --- | --- |
+| `setup` | 初回設定ウィザード:Obsidian の保管庫を探し、設定ファイルと不足している標準の下書きを作ります |
+| `project-stages` | 新しいプロジェクトを6つの段階と Obsidian のノート(ステータス、質問、計画、決定)、共通のプロジェクトマップで管理します。コードは書きません |
+| `naming-standards` | 標準に沿ったプロジェクトとデバイスの命名:コードネーム、公開名、`gen-N` ブランチ、タグ |
+| `obsidian-notes` | ノートの書式:ASCII の代わりに Excalidraw の図、Mermaid、フォルダ構成、決定の記録 |
+| `project-scaffold` | リポジトリの雛形づくりのメンター:フォルダ構成、`gen-1` ブランチ、README、ライセンス、CI |
+| `repo-init` | コードフォルダの雛形(README、`.gitignore`、hello-world、`tests/`、ライセンス)を作り、ライセンスの互換性を確認します |
+| `release-versioning` | バージョンとリリース:SemVer、Conventional Commits、タグ、release-please、コミットメッセージ |
+| `code-coach` | Rust、C++、C、Python、Go、Java、アセンブリ、git のメンター:説明は行い、コードは利用者が書きます |
+| `firmware-esp-stm` | ESP と STM32 のファームウェアのメンター:ビルド、書き込み、デバッグ、周辺機器 |
+| `hw-design-coach` | 回路図と基板設計のメンター:電源、配線、ERC/DRC、ESP/STM32 基板、自作プロセッサ |
+| `hw-board-check` | 発注前の基板チェック:ERC/DRC、製造要件、リビジョン、デバイスパスポート |
+| `test-plan` | 段階4のプロジェクト検証:`tests/` にテストを書いて実行し、「検証」ノートを管理します |
+| `project-security` | 段階4でのプロジェクト自身のコードのセキュリティ確認。結果は「セキュリティ」ノートに記録します |
+| `dependency-audit` | 依存関係の選定と、脆弱性やバグの確認、候補の順位付け |
+| `reverse-engineering` | 正当な目的でのバイナリ、ファームウェア、形式、プロトコルの解析 |
+| `project-retro` | プロジェクトの凍結、中止、リリース時のまとめノート |
+| `standards-audit` | 標準とスキルの整合性チェック。レポートのみで、何も変更しません |
+| `run-audit` | 整合性チェックの手動実行:`/armarium:run-audit` |
+| `run-trigger-check` | スキルの起動チェックの手動実行:`/armarium:run-trigger-check`(トークンを消費し、確認を求めます) |
+
 ## GitHub からのインストール
 
 このリポジトリ自体がマーケットプレイスです(`.claude-plugin/marketplace.json`、名前は `vugsk-plugins`):

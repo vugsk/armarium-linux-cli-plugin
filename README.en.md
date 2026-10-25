@@ -30,6 +30,30 @@ Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the auth
 
 The standards (`Стандарт по названию проектов.md`, `Стандарт по названию устройств.md`, `Стандарт проектных заметок.md`) live in the `Проекты/` folder of your vault (the vault root is set in `~/.claude/armarium.json`), not in the plugin: the skills read them from there.
 
+## Skills
+
+| Skill | What it does |
+| --- | --- |
+| `setup` | first-run wizard: finds the Obsidian vault, creates the settings file and drafts of the missing standards |
+| `project-stages` | runs a new project through six stages and Obsidian notes (status, questions, plan, decisions) and the common project map; writes no code |
+| `naming-standards` | names of projects and devices by the standards: code word, public name, `gen-N` branches, tags |
+| `obsidian-notes` | note formatting: Excalidraw drawings instead of ASCII, Mermaid diagrams, folder layout, recording decisions |
+| `project-scaffold` | mentor for a repository skeleton: folder structure, the `gen-1` branch, README, license, CI |
+| `repo-init` | creates the skeleton of a code folder (README, `.gitignore`, hello-world, `tests/`, license) and checks license compatibility |
+| `release-versioning` | versions and releases: SemVer, Conventional Commits, tags, release-please, commit messages |
+| `code-coach` | mentor for Rust, C++, C, Python, Go, Java, assembly and git: explains, while the user writes the code |
+| `firmware-esp-stm` | mentor for ESP and STM32 firmware: build, flashing, debugging, peripherals |
+| `hw-design-coach` | mentor for schematic and board design: power, routing, ERC/DRC, ESP and STM32 boards, a custom processor |
+| `hw-board-check` | board check before ordering: ERC/DRC, manufacturing requirements, revisions, the device passport |
+| `test-plan` | project check at stage 4: writes and runs tests in `tests/`, keeps the "Checks" note |
+| `project-security` | security check of the project's own code at stage 4; records the result in a "Security" note |
+| `dependency-audit` | choosing and checking dependencies for vulnerabilities and bugs, ranking the candidates |
+| `reverse-engineering` | analysis of binaries, firmware, formats and protocols for lawful purposes |
+| `project-retro` | a summary note when a project is frozen, cancelled or released |
+| `standards-audit` | consistency check of the standards and skills; a report only, changes nothing |
+| `run-audit` | manual run of the consistency check: `/armarium:run-audit` |
+| `run-trigger-check` | manual check that the skills trigger: `/armarium:run-trigger-check` (spends tokens, asks for confirmation) |
+
 ## Install from GitHub
 
 The repository is itself a marketplace (`.claude-plugin/marketplace.json`, name `vugsk-plugins`):
