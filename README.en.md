@@ -23,7 +23,7 @@ Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the auth
 | Folder | What it is |
 | --- | --- |
 | `skills/` | 19 skills: project names and stages, mentors for code, firmware and hardware, board check, tests, security, dependencies, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
-| `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard) |
+| `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard), `question-rounds.md` (the rule for asking the user questions in rounds) |
 | `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` |
 | `checks/` | the check set: `queries.json`, `run_trigger.py`, `make_fixtures.py`, description and scenarios |
 | `tests/` | plugin tests (how to run them: see "For development") |
@@ -108,7 +108,7 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 ## Known limitations
 
 - The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (standards and project notes in `Проекты/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
-- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 73 queries: the last full run gave 71/73. After the descriptions of `project-stages`, `project-scaffold` and `code-coach` were reworded (2026-10-25), the two failing queries triggered 4 times out of 4, and all 19 queries of these three skills passed; the whole set has not been rerun since. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
+- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 81 queries: the last full run (2026-10-25, after adding queries about design and commits and rewording the descriptions of `project-stages`, `project-scaffold` and `obsidian-notes`) gave 81/81. The previous full run, before `project-scaffold` and `project-stages` were explicitly told apart, gave 80/81: the borderline query "where do I start a new repository for a bot…" failed. Borderline queries of these two skills (4 queries, 5 repeats each): the old description 20/20, the description before the split 18/20, after the split 20/20; the difference is too small to conclude anything. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
 - The skills read files in the vault; text in them is treated as data, not as instructions (`docs/settings.md`). This was checked with two trial runs and is not proof of complete protection against injected instructions.
 - License: MIT, copyright holder `vugsk` (file `LICENSE`, field `license` in `plugin.json`).
 

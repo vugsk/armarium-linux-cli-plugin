@@ -22,7 +22,7 @@
   {
     "skill": "obsidian-notes",
     "should_trigger": true,
-    "query": "оформи заметку про архитектуру нового tui-проекта и нарисуй схему, положи в хранилище"
+    "query": "нарисуй схему Excalidraw для заметки об архитектуре и положи файл в хранилище"
   },
   {
     "skill": "obsidian-notes",
@@ -303,6 +303,31 @@
     "skill": "project-stages",
     "should_trigger": true,
     "query": "составь план проекта: разбей на вехи и задачи"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "составь заметку Дизайн для проекта nexa: это tui-просмотрщик логов"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "опиши интерфейс моего проекта в заметках: экраны, переходы и клавиши"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "запиши в заметку проекта, какие команды и флаги будут у моей cli-программы"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "как в ratatui сделать список с выбором строки"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "как развести плату под клавиатуру, где поставить конденсаторы"
   },
   {
     "skill": "release-versioning",
