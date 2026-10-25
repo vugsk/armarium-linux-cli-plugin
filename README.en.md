@@ -98,4 +98,4 @@ Tests (Python standard library, no tokens spent):
 python3 -m unittest discover -s tests -v
 ```
 
-Three wizard scenarios (`tests/test_09_wizard_scenarios.py`) are skipped by default: they run `claude -p`, spend tokens and temporarily replace your real `~/.claude/armarium.json` (with a backup and a restore). Enable them with the variable `ARMARIUM_WIZARD_TEST=1`. The skill trigger check is `/armarium:run-trigger-check` (also spends tokens).
+Three wizard scenarios (`tests/test_09_wizard_scenarios.py`) are skipped by default: they run `claude -p` and spend tokens. If `bwrap` (bubblewrap) is installed, the wizard runs in a sandbox with a temporary settings file and your real `~/.claude/armarium.json` is not touched; without `bwrap` the test temporarily replaces the real file (with a backup and a restore). Enable them with the variable `ARMARIUM_WIZARD_TEST=1`. The skill trigger check is `/armarium:run-trigger-check` (also spends tokens).

@@ -100,4 +100,4 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 python3 -m unittest discover -s tests -v
 ```
 
-ウィザードの3つのシナリオ(`tests/test_09_wizard_scenarios.py`)は、既定ではスキップされます。`claude -p` を実行してトークンを消費し、実際の `~/.claude/armarium.json` を一時的に差し替えるためです(バックアップと復元つき)。有効にするには環境変数 `ARMARIUM_WIZARD_TEST=1` を設定します。スキルの起動チェックは `/armarium:run-trigger-check` です(こちらもトークンを消費します)。
+ウィザードの3つのシナリオ(`tests/test_09_wizard_scenarios.py`)は、既定ではスキップされます。`claude -p` を実行してトークンを消費するためです。`bwrap`(bubblewrap)がインストールされている場合、ウィザードは一時的な設定ファイルを持つサンドボックス内で動くため、実際の `~/.claude/armarium.json` には触れません。`bwrap` がない場合は、テストが実際のファイルを一時的に差し替えます(バックアップと復元つき)。有効にするには環境変数 `ARMARIUM_WIZARD_TEST=1` を設定します。スキルの起動チェックは `/armarium:run-trigger-check` です(こちらもトークンを消費します)。

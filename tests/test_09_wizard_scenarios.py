@@ -1,12 +1,16 @@
 """Тест 9: сценарии мастера настройки `armarium:setup` (многоходовая часть проверена вручную, здесь ответы даны заранее).
 
 Зачем: требования Т-6 и Т-7 (мастер создаёт и исправляет файл настроек, не трогает готовые стандарты, пишет только
-с согласия человека). Мастер всегда работает с НАСТОЯЩИМ файлом `~/.claude/armarium.json` (подменить домашнюю папку
-для инструментов Claude нельзя, это проверено), поэтому тест на время подменяет этот файл: сохраняет копию, убирает
-файл, после каждого сценария возвращает копию и сверяет контрольную сумму. Если вернуть файл не удалось, тест
-падает с понятной ошибкой (копия остаётся во временной папке, путь в сообщении).
-ТРАТИТ ТОКЕНЫ (три запроса `claude -p`) и меняет ваш файл настроек на время прогона, поэтому по умолчанию ПРОПУСКАЕТСЯ:
-чтобы запустить, задайте переменную окружения ARMARIUM_WIZARD_TEST=1 (и не пользуйтесь Claude в других окнах на это время).
+с согласия человека). Мастер всегда работает с файлом `~/.claude/armarium.json` по настоящему пути (подменить домашнюю
+папку для инструментов Claude через HOME нельзя, это проверено). Как тест изолирует настоящий файл:
+  * Основной способ (если установлен `bwrap`, bubblewrap, и разрешены пользовательские пространства имён): `claude`
+    запускается в песочнице, где поверх `~/.claude` смонтирована временная папка, а все остальные записи из
+    настоящей `~/.claude` (вход в аккаунт, плагины, сессии) смонтированы в неё по одной, кроме `armarium.json` и его
+    копий. Мастер видит ТОЛЬКО временный файл настроек; ваш настоящий файл вообще не затрагивается, подмены и возврата нет.
+  * Запасной способ (нет `bwrap`): на время сценария настоящий файл убирается, потом возвращается, контрольная сумма
+    сверяется. Тогда не пользуйтесь Claude в других окнах на время прогона.
+ТРАТИТ ТОКЕНЫ (три запроса `claude -p`), поэтому по умолчанию ПРОПУСКАЕТСЯ:
+чтобы запустить, задайте переменную окружения ARMARIUM_WIZARD_TEST=1.
 Проверка самого теста (мутации): задайте ещё ARMARIUM_PLUGIN_DIR=<папка копии плагина со сломанным скиллом setup>; тест должен упасть.
 Сценарии (в каждом хранилище и ответы выдуманные, во временной папке):
   A. Файла настроек нет, человек отказывается его записывать: файл не создан.
@@ -36,15 +40,66 @@ INTRO = ("Настрой armarium. Это автоматическая пров�
          "спрашивать меня не нужно, действуй по шагам мастера. Память не записывай (шаг 7: нет). ")
 
 
+def sandbox_available() -> bool:
+    """Есть ли рабочий `bwrap`: пробный запуск пустой команды в песочнице (нужны пользовательские пространства имён)."""
+    bwrap = shutil.which("bwrap")
+    if not bwrap:
+        return False
+    try:
+        return subprocess.run([bwrap, "--dev-bind", "/", "/", "true"], capture_output=True, timeout=30).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-@unittest.skipUnless(RUN, "пропущен: тратит токены и меняет ваш файл настроек; задайте ARMARIUM_WIZARD_TEST=1")
+@unittest.skipUnless(RUN, "пропущен: тратит токены; задайте ARMARIUM_WIZARD_TEST=1")
 class TestWizard(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp, True)
+        # Выдуманное хранилище с папкой Проекты.
+        self.vault = self.tmp / "vault"
+        (self.vault / "Проекты").mkdir(parents=True)
+        self.workdir = self.tmp / "work"
+        self.workdir.mkdir()
+        self.sandbox = sandbox_available()
+        if self.sandbox:
+            self.setup_sandbox()
+        else:
+            self.setup_swap()
+
+    def setup_sandbox(self):
+        """Временная папка вместо ~/.claude внутри песочницы; настоящий файл настроек туда не попадает."""
+        real_dir = SETTINGS.parent
+        self.fake_dir = self.tmp / "claude-dir"
+        self.fake_dir.mkdir()
+        self.settings = self.fake_dir / "armarium.json"     # то, что мастер увидит как ~/.claude/armarium.json
+        self.old_baks = set()
+        args = [shutil.which("bwrap"), "--dev-bind", "/", "/", "--bind", str(self.fake_dir), str(real_dir)]
+        # Остальные записи настоящей ~/.claude монтируем по одной: вход в аккаунт, плагины, сессии должны работать.
+        # Источник указывает на настоящую папку (bwrap берёт источник из исходной файловой системы), назначение — внутрь
+        # временной папки. Файл настроек и его копии не монтируем: мастер должен видеть только временный.
+        for entry in sorted(real_dir.iterdir()):
+            if entry.name == SETTINGS.name or entry.name.startswith(SETTINGS.name + "."):
+                continue
+            if entry.exists():
+                args += ["--bind", str(entry), str(real_dir / entry.name)]
+        self.bwrap_args = args
+        self.before_real = sha(SETTINGS) if SETTINGS.exists() else None
+        self.addCleanup(self.check_real_untouched)
+
+    def check_real_untouched(self):
+        """Настоящий файл настроек не должен измениться (в песочнице до него мастер не достаёт)."""
+        after = sha(SETTINGS) if SETTINGS.exists() else None
+        self.assertEqual(after, self.before_real, "настоящий файл настроек изменился во время теста")
+
+    def setup_swap(self):
+        """Запасной способ: убрать настоящий файл на время сценария и вернуть."""
+        self.settings = SETTINGS
+        self.bwrap_args = []
         # Копия настоящего файла (если он есть) и его контрольная сумма: по ним проверяем возврат.
         # Копия лежит рядом с настоящим файлом, а не во временной папке: если процесс убьют, она не пропадёт при очистке
         # временных файлов (находка 7).
@@ -63,14 +118,9 @@ class TestWizard(unittest.TestCase):
         self.old_baks = set(SETTINGS.parent.glob("armarium.json.bak-*"))
         self.had_plain_bak = SETTINGS.with_name("armarium.json.bak").exists()
         self.addCleanup(self.restore)
-        # Выдуманное хранилище с папкой Проекты.
-        self.vault = self.tmp / "vault"
-        (self.vault / "Проекты").mkdir(parents=True)
-        self.workdir = self.tmp / "work"
-        self.workdir.mkdir()
 
     def restore(self):
-        """Возвращает настоящий файл настроек и убирает копии .bak, созданные мастером в этом прогоне."""
+        """Запасной способ: возвращает настоящий файл настроек и убирает копии .bak, созданные мастером в этом прогоне."""
         if SETTINGS.exists():
             SETTINGS.unlink()
         for bak in set(SETTINGS.parent.glob("armarium.json.bak-*")) - self.old_baks:
@@ -89,23 +139,23 @@ class TestWizard(unittest.TestCase):
         # проверить, что тест это заметит). Без переменной работает установленный плагин.
         plugin_dir = os.environ.get("ARMARIUM_PLUGIN_DIR")
         extra = ["--plugin-dir", plugin_dir] if plugin_dir else []
-        result = subprocess.run(["claude", "-p", INTRO + answers, "--max-turns", "25", *extra, *TOOLS],
+        result = subprocess.run([*self.bwrap_args, "claude", "-p", INTRO + answers, "--max-turns", "25", *extra, *TOOLS],
                                 capture_output=True, text=True, cwd=self.workdir, env=env, timeout=900)
         return result.stdout
 
     def test_a_refuse_settings(self):
         self.wizard(f"Файла настроек нет. Соглашения прочитал. Хранилище: {self.vault} (папка Проекты есть). "
                     "Новые стандарты не нужны. Настройки (шаг 6): НЕТ, ничего не записывай в ~/.claude/armarium.json.")
-        self.assertFalse(SETTINGS.exists(), "мастер создал файл настроек вопреки отказу")
+        self.assertFalse(self.settings.exists(), "мастер создал файл настроек вопреки отказу")
 
     def test_b_fix_corrupted(self):
-        SETTINGS.write_text("не json", encoding="utf-8")
+        self.settings.write_text("не json", encoding="utf-8")
         self.wizard(f"Файл настроек повреждён (так и есть). Соглашения прочитал. Хранилище: {self.vault}. "
                     "Новые стандарты не нужны. Исправь файл настроек: да, сначала сделай копию повреждённого файла.")
-        data = json.loads(SETTINGS.read_text(encoding="utf-8"))          # должен быть корректным JSON
+        data = json.loads(self.settings.read_text(encoding="utf-8"))          # должен быть корректным JSON
         self.assertEqual(data.get("version"), 1)
         self.assertEqual(Path(data["vault"]).expanduser(), self.vault)
-        baks = set(SETTINGS.parent.glob("armarium.json.bak-*")) - self.old_baks
+        baks = set(self.settings.parent.glob("armarium.json.bak-*")) - self.old_baks
         self.assertEqual(len(baks), 1, "ожидалась одна копия повреждённого файла")
         self.assertEqual(next(iter(baks)).read_text(encoding="utf-8").strip(), "не json")
 
@@ -121,7 +171,7 @@ class TestWizard(unittest.TestCase):
                     "лежат. Из недостающих нужен только стандарт названий устройств, но содержание его не обсуждай: "
                     "его не создавай. Настройки (шаг 6): да, запиши.")
         self.assertEqual([sha(s) for s in standards], before, "мастер изменил готовые стандарты")
-        self.assertTrue(SETTINGS.exists(), "мастер не создал файл настроек")
+        self.assertTrue(self.settings.exists(), "мастер не создал файл настроек")
 
 
 if __name__ == "__main__":

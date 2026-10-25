@@ -96,4 +96,4 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 python3 -m unittest discover -s tests -v
 ```
 
-Три сценария мастера настройки (`tests/test_09_wizard_scenarios.py`) по умолчанию пропускаются: они запускают `claude -p`, тратят токены и на время подменяют ваш настоящий `~/.claude/armarium.json` (с копией и возвратом). Включаются переменной `ARMARIUM_WIZARD_TEST=1`. Проверка срабатывания скиллов — `/armarium:run-trigger-check` (тоже тратит токены).
+Три сценария мастера настройки (`tests/test_09_wizard_scenarios.py`) по умолчанию пропускаются: они запускают `claude -p` и тратят токены. Если установлен `bwrap` (bubblewrap), мастер работает в песочнице с временным файлом настроек, и ваш настоящий `~/.claude/armarium.json` не затрагивается; без `bwrap` тест на время подменяет настоящий файл (с копией и возвратом) Включаются переменной `ARMARIUM_WIZARD_TEST=1`. Проверка срабатывания скиллов — `/armarium:run-trigger-check` (тоже тратит токены).
