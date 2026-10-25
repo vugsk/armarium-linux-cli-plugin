@@ -310,6 +310,21 @@
     "query": "предложи сообщение коммита для этих изменений: добавил поиск по названию"
   },
   {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "сделай коммит этих правок"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "закоммить изменения в README"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "давай закоммитим, что в него включить и какое сообщение написать?"
+  },
+  {
     "skill": "project-retro",
     "should_trigger": true,
     "query": "Замораживаю проект adhide, нет времени. Давай подведём итоги."
