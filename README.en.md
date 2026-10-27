@@ -6,7 +6,7 @@
 
 **About the names.** In commands, paths and skill names the plugin is called `armarium` (`/armarium:run-audit`, `~/.claude/armarium.json`, `armarium@vugsk-plugins`). This is the technical name and it never changes. SVOD-1 and `armarium` are the same plugin.
 
-A personal Claude Code plugin, SVOD-1 (code word `armarium`, Latin for "tool cabinet"): 19 skills for working by your own personal standards (two of them are manual runs of checks) and a hook that reminds you to run an audit.
+A personal Claude Code plugin, SVOD-1 (code word `armarium`, Latin for "tool cabinet"): 23 skills for working by your own personal standards (two of them are manual runs of checks) and a hook that reminds you to run an audit.
 
 > The standards the skills work with, and some of the skill texts, are written in Russian. This page is a translation of the Russian README.
 
@@ -22,7 +22,7 @@ Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the auth
 
 | Folder | What it is |
 | --- | --- |
-| `skills/` | 19 skills: project names and stages, mentors for code, firmware and hardware, board check, tests, security, dependencies, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
+| `skills/` | 23 skills: project names and stages, mentors for code, debugging, CI, firmware and hardware, board check, tests, release readiness, security, dependencies, documentation, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
 | `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard), `question-rounds.md` (the rule for asking the user questions in rounds) |
 | `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` |
 | `checks/` | the check set: `queries.json`, `run_trigger.py`, `make_fixtures.py`, description and scenarios |
@@ -96,7 +96,7 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 | Configuration | Tokens at session start | Difference from "no plugins" |
 | --- | --- | --- |
 | No plugins | 15,150 | — |
-| SVOD-1 only (19 skills) | 19,994 | +4,844 (+32%) |
+| SVOD-1 only (19 skills, measured before 0.4.0) | 19,994 | +4,844 (+32%) |
 | SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 21,977 | +6,827 (+45%) |
 
 - The recommended plugins add about 2,000 more tokens on top of SVOD-1. Separate measurements: SVOD-1 + `context7` only — 21,977, SVOD-1 + the other six (language servers and `security-guidance`) — 21,687. These numbers do not add up (together they give the same as `context7` alone); I did not find out why, so only the figure for all plugins together is reliable.

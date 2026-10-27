@@ -403,5 +403,85 @@
     "skill": "setup",
     "should_trigger": false,
     "query": "создай заготовку репозитория для проекта на python"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": true,
+    "query": "моя программа на c++ падает с segfault, как найти причину через gdb"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": true,
+    "query": "приложение медленно работает, как понять, где оно тратит время, perf или flamegraph"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": false,
+    "query": "объясни, что такое borrow checker в rust"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": false,
+    "query": "настрой workflow github actions для сборки проекта"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": true,
+    "query": "сборка в github actions падает, а локально всё собирается, помоги разобрать лог"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": true,
+    "query": "как настроить кэш и матрицу версий в workflow для rust-проекта"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": false,
+    "query": "программа падает с segfault, как отладить"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": false,
+    "query": "предложи текст коммита для исправления бага"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": true,
+    "query": "готов ли проект к релизу, проверь по всем заметкам и репозиторию"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": true,
+    "query": "можно выпускать? составь вердикт, что осталось до выпуска"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": false,
+    "query": "напиши тесты для моего проекта"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": false,
+    "query": "какой тег поставить для новой версии"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": true,
+    "query": "напиши справку по командам и флагам моей cli-утилиты в docs/"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": true,
+    "query": "сделай man-страницу и быстрый старт для проекта по заметке Дизайн"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": false,
+    "query": "наполни README перед релизом из заметок проекта"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": false,
+    "query": "оформи заметку в Obsidian со схемой Excalidraw"
   }
 ]
