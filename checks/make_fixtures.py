@@ -6,7 +6,7 @@
 
 Что создаётся (всё учебное, ничего настоящего, секреты поддельные):
     adhide-stage1/   заметки проекта на этапе 1 с неполной «Идеей» (проверка перехода между этапами)
-    wc/              маленький проект на Python и заметки на этапе 4 (проверка test-plan)
+    wc/              маленький проект на Python и заметки на этапе 7 (проверка test-plan)
     keybrd-stm-dev/  репозиторий устройства с намеренными ошибками (проверка hw-board-check)
     vulnapp/         код бота с уязвимостями и git-историей с «секретом» (проверка project-security)
     device.bin       маленький бинарный файл с известной структурой (проверка reverse-engineering)
@@ -33,8 +33,9 @@ def git(repo: Path, *args: str) -> None:
 
 
 def status_note(code: str, stage_no: int, stage_name: str) -> str:
-    """Заметка «Статус» по шаблону стандарта проектных заметок для нужного этапа."""
-    names = ["Инициация", "Планирование", "Реализация", "Проверка", "Релиз", "Сопровождение"]
+    """Заметка «Статус» по шаблону стандарта проектных заметок (девять этапов) для нужного этапа."""
+    names = ["Инициация", "Требования", "Проектирование", "Исследование и прототип", "Планирование", "Реализация",
+             "Проверка", "Релиз", "Сопровождение"]
     rows = []
     for i, n in enumerate(names, 1):
         state = "выполнен" if i < stage_no else ("идёт" if i == stage_no else "не начат")
@@ -52,7 +53,7 @@ def questions_note(code: str) -> str:
 def main(out: Path) -> None:
     out.mkdir(parents=True, exist_ok=True)
 
-    # 1. Этап 1 с неполной «Идеей»: скилл не должен переводить проект на этап 2.
+    # 1. Этап 1 с неполной «Идеей»: скилл не должен переводить проект на этап 2 (Требования).
     base = out / "adhide-stage1/Проекты/adhide"
     write(base / "adhide - Статус.md", status_note("adhide", 1, "Инициация"))
     write(base / "adhide - Идея.md", "# adhide - Идея\n\n## Проблема\nРеклама на YouTube мешает смотреть видео.\n\n"
@@ -63,7 +64,7 @@ def main(out: Path) -> None:
     write(out / "wc/code/wc/wordcount.py",
           'def count_words(text):\n    """Возвращает число слов в строке (слова разделены пробельными символами)."""\n    return len(text.split())\n')
     nb = out / "wc/Проекты/wc"
-    write(nb / "wc - Статус.md", status_note("wc", 4, "Проверка"))
+    write(nb / "wc - Статус.md", status_note("wc", 7, "Проверка"))
     write(nb / "wc - Идея.md", "# wc - Идея\n\n## Цель\nФункция count_words считает число слов в строке.\n\n## Критерии Успеха\n"
                                "- На обычной строке возвращает число слов.\n- На пустой строке возвращает 0.\n- Несколько пробелов подряд не создают лишних слов.\n")
     write(nb / "wc - Вопросы.md", questions_note("wc"))
@@ -102,7 +103,7 @@ def main(out: Path) -> None:
     (app / ".env").unlink()
     git(app, "commit", "-qm", "remove env")
     vn = out / "vulnapp/Проекты/vulnapp"
-    write(vn / "vulnapp - Статус.md", status_note("vulnapp", 4, "Проверка").replace("Тип: tool", "Тип: bot"))
+    write(vn / "vulnapp - Статус.md", status_note("vulnapp", 7, "Проверка").replace("Тип: tool", "Тип: bot"))
     write(vn / "vulnapp - Вопросы.md", questions_note("vulnapp"))
 
     # 5. Бинарный файл с известной структурой: заголовок DEVX, версия, число записей, записи тип-длина-данные, CRC32.

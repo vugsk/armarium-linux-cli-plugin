@@ -6,13 +6,13 @@
 
 **About the names.** In commands, paths and skill names the plugin is called `armarium` (`/armarium:run-audit`, `~/.claude/armarium.json`, `armarium@vugsk-plugins`). This is the technical name and it never changes. SVOD-1 and `armarium` are the same plugin.
 
-A personal Claude Code plugin, SVOD-1 (code word `armarium`, Latin for "tool cabinet"): 23 skills for working by your own personal standards (two of them are manual runs of checks) and a hook that reminds you to run an audit.
+A personal Claude Code plugin, SVOD-1 (code word `armarium`, Latin for "tool cabinet"): 25 skills for working by your own personal standards (two of them are manual runs of checks) and a hook that reminds you to run an audit.
 
 > The standards the skills work with, and some of the skill texts, are written in Russian. This page is a translation of the Russian README.
 
 ## What it is for
 
-The plugin guides project work by your own standards: names for projects and devices, six project stages with exit criteria, notes (idea, requirements, architecture, plan with milestones, decisions), tests, security and dependency checks, retrospectives. Some skills are mentors for code, firmware and hardware: they explain, and the user writes the code. The standards live in your Obsidian vault. If you have none, the `setup` wizard asks questions and creates drafts.
+The plugin guides project work by your own standards: names for projects and devices, nine project stages with exit criteria, notes (idea, requirements, architecture, data models, growth, plan with milestones, decisions), tests, security and dependency checks, retrospectives. Some skills are mentors for code, firmware and hardware: they explain, and the user writes the code. The standards live in your Obsidian vault. If you have none, the `setup` wizard asks questions and creates drafts.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the auth
 
 | Folder | What it is |
 | --- | --- |
-| `skills/` | 23 skills: project names and stages, mentors for code, debugging, CI, firmware and hardware, board check, tests, release readiness, security, dependencies, documentation, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
+| `skills/` | 25 skills: project names and stages, milestones and tasks, structure design, mentors for code, debugging, CI, firmware and hardware, board check, tests, release readiness, security, dependencies, documentation, reverse engineering, project retrospectives, standards audit, the `setup` wizard, and the manual runs `run-audit` (consistency check) and `run-trigger-check` (skill trigger check; spends account tokens and asks for confirmation) |
 | `docs/` | references for the skills: `settings.md` (settings file `~/.claude/armarium.json`), `standards-contract.md` (the contract on the structure of the standards, used by the wizard), `question-rounds.md` (the rule for asking the user questions in rounds) |
 | `hooks/` | `audit-reminder.sh` and `hooks.json`: after a standard or a skill is edited, the hook reminds you to run `standards-audit` |
 | `checks/` | the check set: `queries.json`, `run_trigger.py`, `make_fixtures.py`, description and scenarios |
@@ -35,18 +35,24 @@ The standards (`Стандарт по названию проектов.md`, `С
 | Skill | What it does |
 | --- | --- |
 | `setup` | first-run wizard: finds the Obsidian vault, creates the settings file and drafts of the missing standards |
-| `project-stages` | runs a new project through six stages and Obsidian notes (status, questions, plan, decisions) and the common project map; writes no code |
+| `project-stages` | runs a new project through nine stages and Obsidian notes (status, questions, plan, decisions) and the common project map; writes no code |
+| `plan-breakdown` | milestones, tasks and subtasks of the plan; questions about them go to the milestone note and to "Questions"; the user sets the states |
+| `design-coach` | mentor for software structure design: data models, modules and boundaries, flows and states, project growth; the user decides |
 | `naming-standards` | names of projects and devices by the standards: code word, public name, `gen-N` branches, tags |
 | `obsidian-notes` | note formatting: Excalidraw drawings instead of ASCII, Mermaid diagrams, folder layout, recording decisions |
 | `project-scaffold` | mentor for a repository skeleton: folder structure, the `gen-1` branch, README, license, CI |
 | `repo-init` | creates the skeleton of a code folder (README, `.gitignore`, hello-world, `tests/`, license) and checks license compatibility |
+| `docs-writer` | user documentation of the project: `docs/`, command reference, man pages |
 | `release-versioning` | versions and releases: SemVer, Conventional Commits, tags, release-please, commit messages |
 | `code-coach` | mentor for Rust, C++, C, Python, Go, Java, assembly and git: explains, while the user writes the code |
+| `debug-coach` | mentor for debugging and profiling: gdb, sanitizers, perf; the user finds the cause |
+| `ci-coach` | mentor for CI and builds: GitHub Actions, cross-compiling, reading a red CI |
 | `firmware-esp-stm` | mentor for ESP and STM32 firmware: build, flashing, debugging, peripherals |
 | `hw-design-coach` | mentor for schematic and board design: power, routing, ERC/DRC, ESP and STM32 boards, a custom processor |
 | `hw-board-check` | board check before ordering: ERC/DRC, manufacturing requirements, revisions, the device passport |
-| `test-plan` | project check at stage 4: writes and runs tests in `tests/`, keeps the "Checks" note |
-| `project-security` | security check of the project's own code at stage 4; records the result in a "Security" note |
+| `test-plan` | project check at stage 7: writes and runs tests in `tests/`, keeps the "Checks" note |
+| `release-gate` | summary release-readiness check from the notes and the repository; a verdict only, changes nothing |
+| `project-security` | security check of the project's own code at stage 7; records the result in a "Security" note |
 | `dependency-audit` | choosing and checking dependencies for vulnerabilities and bugs, ranking the candidates |
 | `reverse-engineering` | analysis of binaries, firmware, formats and protocols for lawful purposes |
 | `project-retro` | a summary note when a project is frozen, cancelled or released |

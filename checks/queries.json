@@ -483,5 +483,45 @@
     "skill": "docs-writer",
     "should_trigger": false,
     "query": "оформи заметку в Obsidian со схемой Excalidraw"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": true,
+    "query": "разбей план на вехи и задачи для моего проекта, потом раскроем первую веху"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": true,
+    "query": "раскрой задачи и подзадачи третьей вехи, я к ней подхожу"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": false,
+    "query": "объясни, что такое borrow checker"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": false,
+    "query": "предложи текст коммита для этого изменения"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": true,
+    "query": "давай спроектируем структуры данных и модули для проекта, обсудим как заложить развитие"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": true,
+    "query": "как разбить проект на модули и что стоит предусмотреть, чтобы потом не переписывать"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": false,
+    "query": "как подключить стабилитрон на плате питания"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": false,
+    "query": "как назвать репозиторий нового проекта"
   }
 ]
