@@ -93,7 +93,7 @@ Install: `claude plugin install <name>@claude-plugins-official`. Installed plugi
 
 ## How many tokens the plugin takes
 
-This is how many tokens Claude receives at the start of a session, before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-25 with Claude Code 2.1.310 using the request "answer in one word: ok", three runs per configuration; the numbers matched. To repeat it, add up `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` from the `usage` field of the reply.
+This is how many tokens Claude receives at the start of a session, before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-29 with Claude Code 2.1.312 using the request "answer in one word: ok", three runs per configuration; the numbers matched (the "no plugins" baseline differs from the previous measurement of 15,150, probably because of a different Claude Code version, so compare the difference, not the absolute numbers). The recommended plugins were connected the same way, with `--plugin-dir` flags from their cache. To repeat it, add up `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` from the `usage` field of the reply.
 
 ```
 claude -p "Ответь одним словом: ok" --output-format json --setting-sources project --plugin-dir <plugin folder>
@@ -101,12 +101,12 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 
 | Configuration | Tokens at session start | Difference from "no plugins" |
 | --- | --- | --- |
-| No plugins | 15,150 | — |
-| SVOD-1 only (19 skills, measured before 0.4.0) | 19,994 | +4,844 (+32%) |
-| SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 21,977 | +6,827 (+45%) |
+| No plugins | 15,429 | — |
+| SVOD-1 only (25 skills, version 0.5.0) | 22,640 | +7,211 (+47%) |
+| SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 22,850 | +7,421 (+48%) |
 
-- The recommended plugins add about 2,000 more tokens on top of SVOD-1. Separate measurements: SVOD-1 + `context7` only — 21,977, SVOD-1 + the other six (language servers and `security-guidance`) — 21,687. These numbers do not add up (together they give the same as `context7` alone); I did not find out why, so only the figure for all plugins together is reliable.
-- The model's context window in this measurement is 1,000,000 tokens, so SVOD-1 takes about 0.5% of the window.
+- The recommended plugins add only about 210 tokens on top of SVOD-1 (on their own they give 15,639 against 15,429 with no plugins). In the previous measurement (before 0.4.0) that addition was about 2,000 tokens; I did not find out why, a possible reason is a different way of connecting the plugins and a different Claude Code version.
+- The model's context window in this measurement is 1,000,000 tokens, so SVOD-1 takes about 0.7% of the window.
 - This is only the start of a session. The text of a skill (the body of `SKILL.md` and its references) is loaded when the skill triggers and is not in the table; its cost depends on the skill and the task.
 - Not measured: cost in money and usage on typical tasks. Cached tokens are cheaper, but that depends on your plan.
 - Your personal `CLAUDE.md` and memory may be included equally in all three values, so it is more reliable to look at the difference than at the absolute numbers.
@@ -114,7 +114,7 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 ## Known limitations
 
 - The path to the vault comes from `~/.claude/armarium.json` (field `vault`, see `docs/settings.md`); the layout inside the vault is fixed (standards and project notes in `Проекты/`). The wizard creates the settings file and drafts of missing standards: say "настрой armarium" (skill `setup`). The wizard configures only dictionaries, type groups, stage criteria and naming rules; the other conventions (note names, stages, tag formats) are built into the skills and listed in `docs/standards-contract.md`.
-- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of 81 queries: the last full run (2026-10-25, after adding queries about design and commits and rewording the descriptions of `project-stages`, `project-scaffold` and `obsidian-notes`) gave 81/81. The previous full run, before `project-scaffold` and `project-stages` were explicitly told apart, gave 80/81: the borderline query "where do I start a new repository for a bot…" failed. Borderline queries of these two skills (4 queries, 5 repeats each): the old description 20/20, the description before the split 18/20, after the split 20/20; the difference is too small to conclude anything. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
+- Skill triggering inside the plugin (with the `armarium:` prefix) was checked with a set of queries. The set now has 105 queries. The last full run (2026-10-27, after adding the six skills `debug-coach`, `ci-coach`, `release-gate`, `docs-writer`, `plan-breakdown`, `design-coach`) gave 103/105; the two failures came from overlapping descriptions (debugging moved away from `code-coach`, milestones and tasks away from `project-stages`). They were fixed, and a re-run of the affected skills (`project-stages`, `plan-breakdown`, `debug-coach`, `code-coach`) passed fully. The previous full run (2026-10-25, after adding queries about design and commits and rewording the descriptions of `project-stages`, `project-scaffold` and `obsidian-notes`) gave 81/81. The previous full run, before `project-scaffold` and `project-stages` were explicitly told apart, gave 80/81: the borderline query "where do I start a new repository for a bot…" failed. Borderline queries of these two skills (4 queries, 5 repeats each): the old description 20/20, the description before the split 18/20, after the split 20/20; the difference is too small to conclude anything. One run per query is only a signal, not a guarantee. Run it with `/armarium:run-trigger-check` (spends tokens).
 - The skills read files in the vault; text in them is treated as data, not as instructions (`docs/settings.md`). This was checked with two trial runs and is not proof of complete protection against injected instructions.
 - License: MIT, copyright holder `vugsk` (file `LICENSE`, field `license` in `plugin.json`).
 
