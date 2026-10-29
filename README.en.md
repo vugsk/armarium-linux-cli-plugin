@@ -14,6 +14,8 @@ A personal Claude Code plugin, SVOD-1 (code word `armarium`, Latin for "tool cab
 
 The plugin guides project work by your own standards: names for projects and devices, nine project stages with exit criteria, notes (idea, requirements, architecture, data models, growth, plan with milestones, decisions), tests, security and dependency checks, retrospectives. Some skills are mentors for code, firmware and hardware: they explain, and the user writes the code. The standards live in your Obsidian vault. If you have none, the `setup` wizard asks questions and creates drafts.
 
+> **Language note.** The skills, templates, standards and notes this plugin works with are written in Russian (skill descriptions, note names such as `Статус` and `Идея`, section headings). A skill is chosen by the meaning of your request, so English requests usually work: a set of 36 English test queries (`checks/queries-en.json`) passed 36/36, one run each. The Russian set passed 103/105 on its first full run, and both failures were fixed. Other languages were not tested. Expect that a skill may sometimes trigger incorrectly or not trigger at all, that replies may come in a different language than you want, and that note names may come out in English where the standards require Russian. If a skill does not trigger, mention it by name in your request.
+
 ## Requirements
 
 Tested on Linux with Claude Code 2.1.310. **Windows is not supported** (the author's decision, 2026-10-25; the hook is written in bash and `jq`, and the trigger check uses Linux mechanisms and will not work on Windows); macOS was not tested. The programs `python3`, `bash`, `jq`, `git` and `claude` are needed. The plugin has no external libraries (only the Python standard library).

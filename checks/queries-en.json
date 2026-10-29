@@ -1,0 +1,182 @@
+[
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "I want to start a new project, a small tool for syncing notes between my phone and my PC. Let's set it up"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "which stage is my project adhide at, and what is the next step?"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": false,
+    "query": "how do I make a new Rust crate with cargo?"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": true,
+    "query": "split my project plan into milestones, tasks and subtasks"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": true,
+    "query": "I'm starting milestone 2, break it down into tasks and subtasks with done-when criteria"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": false,
+    "query": "explain what a borrow checker is in Rust"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": true,
+    "query": "let's design the data models and the module boundaries of my project, and think about how to leave room for growth"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": true,
+    "query": "how should I split this program into modules so I don't have to rewrite it later?"
+  },
+  {
+    "skill": "design-coach",
+    "should_trigger": false,
+    "query": "how do I place decoupling capacitors on my board?"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": true,
+    "query": "my C++ program crashes with a segmentation fault, how do I find the cause with gdb?"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": true,
+    "query": "my app is slow, how do I find where it spends its time?"
+  },
+  {
+    "skill": "debug-coach",
+    "should_trigger": false,
+    "query": "explain how lifetimes work in Rust"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": true,
+    "query": "my GitHub Actions workflow fails but the build works locally, help me read the log"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": true,
+    "query": "how do I set up caching and a version matrix in a CI workflow for a Rust project?"
+  },
+  {
+    "skill": "ci-coach",
+    "should_trigger": false,
+    "query": "my program crashes with a segfault, how do I debug it?"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": true,
+    "query": "is my project ready for release? check the notes and the repository and give me a verdict"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": true,
+    "query": "what is left before I can publish version 1.0?"
+  },
+  {
+    "skill": "release-gate",
+    "should_trigger": false,
+    "query": "which git tag should I use for the new version?"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": true,
+    "query": "write the command reference and a quick start for my CLI tool in docs/"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": true,
+    "query": "create a man page for my utility"
+  },
+  {
+    "skill": "docs-writer",
+    "should_trigger": false,
+    "query": "draw an Excalidraw diagram for the architecture note in my vault"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "suggest a commit message for my changes"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": true,
+    "query": "how do I configure release-please and tag versions with the g1-v prefix?"
+  },
+  {
+    "skill": "release-versioning",
+    "should_trigger": false,
+    "query": "set up a GitHub Actions workflow to build my project"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "explain what a borrow checker is in Rust"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": true,
+    "query": "write a function that parses a config file for my project"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": false,
+    "query": "my GitHub Actions workflow fails on the test step"
+  },
+  {
+    "skill": "naming-standards",
+    "should_trigger": true,
+    "query": "how should I name the repository for a Firefox extension that hides ads?"
+  },
+  {
+    "skill": "naming-standards",
+    "should_trigger": false,
+    "query": "rename the variable cnt to counter in main.rs"
+  },
+  {
+    "skill": "test-plan",
+    "should_trigger": true,
+    "query": "let's test my project: write and run the tests and record the results in the notes"
+  },
+  {
+    "skill": "project-security",
+    "should_trigger": true,
+    "query": "check my project for vulnerabilities and leaked secrets in the code and git history"
+  },
+  {
+    "skill": "dependency-audit",
+    "should_trigger": true,
+    "query": "which library should I pick for parsing JSON in Rust, and is it safe?"
+  },
+  {
+    "skill": "repo-init",
+    "should_trigger": true,
+    "query": "create the skeleton for my new Python project: README, .gitignore, license and tests folder"
+  },
+  {
+    "skill": "hw-design-coach",
+    "should_trigger": true,
+    "query": "how do I design the power supply for an ESP32 board and route the traces?"
+  },
+  {
+    "skill": "hw-design-coach",
+    "should_trigger": false,
+    "query": "design the module structure of my Rust program"
+  },
+  {
+    "skill": "firmware-esp-stm",
+    "should_trigger": true,
+    "query": "my STM32 UART interrupt never fires, how do I configure the peripheral?"
+  }
+]
