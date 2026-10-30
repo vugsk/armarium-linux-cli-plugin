@@ -523,5 +523,35 @@
     "skill": "design-coach",
     "should_trigger": false,
     "query": "как назвать репозиторий нового проекта"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": true,
+    "query": "запиши этот алгоритм повтора отправки псевдокодом по моему стандарту"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": true,
+    "query": "нарисуй блок-схему для алгоритма вытеснения из кэша"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": true,
+    "query": "как описать класс с полями и методами в заметке проектирования без кода"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": true,
+    "query": "напиши формулу для оценки важности заметки и поясни обозначения"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": false,
+    "query": "напиши на Rust функцию поиска заметок по слову"
+  },
+  {
+    "skill": "pseudocode-writer",
+    "should_trigger": false,
+    "query": "давай обсудим как разбить программу на модули и что вынести отдельно"
   }
 ]
