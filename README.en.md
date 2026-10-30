@@ -87,9 +87,15 @@ You can use SVOD-1 together with these plugins from the official catalog `claude
 
 | Plugin | Why | What is needed besides the plugin |
 | --- | --- | --- |
-| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | language servers: Claude reads C/C++, Rust, Python, Go and Java code more accurately, which helps the `code-coach` skill | the servers themselves on the system: `clangd`, `rust-analyzer`, `pyright`, `gopls`, `jdtls`; a plugin without its server does nothing |
+| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | language servers: Claude reads C/C++, Rust, Python, Go and Java code more accurately, which helps the `code-coach`, `debug-coach` and `project-security` skills | the servers themselves on the system: `clangd`, `rust-analyzer`, `pyright`, `gopls`, `jdtls`; a plugin without its server does nothing |
 | `context7` | up-to-date library documentation by version; supports the rule "facts only from documentation" | requests go to the external server `mcp.context7.com`: do not send private code through it |
 | `security-guidance` | warnings about unsafe patterns when editing, a check of changes when stopping; complements the `project-security` skill | the hooks fire on every edit and can be noisy; disable with `claude plugin disable security-guidance@claude-plugins-official` |
+| `sonatype-guide` | vulnerability data, package trust and malicious-package checks; used by the `dependency-audit` skill | the `SONATYPE_GUIDE_TOKEN` token (you create it); package names are sent to Sonatype's external server; the plugin's own skill fires before any dependency install |
+| `github` | CI status, run logs, issues, tags and releases (read only); used by `release-gate` and `ci-coach` | the `GITHUB_PERSONAL_ACCESS_TOKEN` token (you create it); requests go to `api.githubcopilot.com` |
+| `codspeed` | measurements, flamegraphs, run comparison; used by `debug-coach` | a CodSpeed account and `codspeed auth login`; results go to the CodSpeed server. The plugin's `codspeed-optimize` and `codspeed-setup-harness` skills write code themselves, so SVOD-1 does not run them |
+| `claude-security` | deep scan of your code with verification of findings; used by `project-security` | your own code only: the plugin adds no isolation and treats the scanned code as trusted; uses many tokens; writes its report into a `CLAUDE-SECURITY-…` folder in the repository; SVOD-1 does not run its patch mode |
+
+SVOD-1 skills use these plugins only if they are installed, and ask for your consent before the first call to an external service. Without a plugin the skill works as before. The links with `sonatype-guide`, `github`, `codspeed` and `claude-security` are installed but have not yet been tried in real work. Skills treat plugin results as data, not instructions, and do not apply edits.
 
 Install: `claude plugin install <name>@claude-plugins-official`. Installed plugins are listed by `claude plugin list`.
 

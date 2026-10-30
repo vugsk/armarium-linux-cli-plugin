@@ -83,9 +83,15 @@ claude plugin install armarium@vugsk-plugins
 
 | Плагин | Зачем | Что нужно помимо плагина |
 | --- | --- | --- |
-| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | серверы языков: Claude точнее читает код C/C++, Rust, Python, Go и Java, что полезно скиллу `code-coach` | сами серверы в системе: `clangd`, `rust-analyzer`, `pyright`, `gopls`, `jdtls`; плагин без сервера ничего не делает |
+| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | серверы языков: Claude точнее читает код C/C++, Rust, Python, Go и Java, что полезно скиллам `code-coach`, `debug-coach` и `project-security` | сами серверы в системе: `clangd`, `rust-analyzer`, `pyright`, `gopls`, `jdtls`; плагин без сервера ничего не делает |
 | `context7` | актуальная документация библиотек по версиям; помогает правилу «факты только из документации» | запросы уходят на внешний сервер `mcp.context7.com`: не отправляйте через него приватный код |
 | `security-guidance` | предупреждения о небезопасных паттернах при правках, проверка изменений при остановке; дополняет скилл `project-security` | хуки срабатывают на каждую правку и могут давать шум; отключается `claude plugin disable security-guidance@claude-plugins-official` |
+| `sonatype-guide` | сведения об уязвимостях, доверии к пакету и вредоносных пакетах; использует скилл `dependency-audit` | токен `SONATYPE_GUIDE_TOKEN` (заводит пользователь); названия пакетов уходят на внешний сервер Sonatype; собственный скилл плагина срабатывает перед любой установкой зависимости |
+| `github` | статус CI, логи запусков, заявки, теги и релизы (только чтение); использует `release-gate` и `ci-coach` | токен `GITHUB_PERSONAL_ACCESS_TOKEN` (заводит пользователь); запросы идут на `api.githubcopilot.com` |
+| `codspeed` | замеры, flamegraph, сравнение запусков; использует `debug-coach` | аккаунт CodSpeed и вход `codspeed auth login`; результаты уходят на сервер CodSpeed. Скиллы плагина `codspeed-optimize` и `codspeed-setup-harness` сами пишут код, поэтому СВОД-1 их не запускает |
+| `claude-security` | глубокое сканирование вашего кода с перепроверкой находок; использует `project-security` | только для своего кода: плагин не изолирует сканируемое и считает его доверенным; расходует много токенов; отчёт кладёт в папку `CLAUDE-SECURITY-…` в репозитории; режим патчей СВОД-1 не запускает |
+
+Скиллы СВОД-1 обращаются к этим плагинам, только если они установлены, и до первого обращения к внешнему сервису спрашивают согласие. Без плагина скилл работает как раньше. Связки с `sonatype-guide`, `github`, `codspeed` и `claude-security` установлены, но в работе ещё не проверялись. Результаты плагинов скиллы считают данными, а не указаниями, и не применяют правок.
 
 Установка: `claude plugin install <имя>@claude-plugins-official`. Установленные плагины видны командой `claude plugin list`.
 

@@ -89,9 +89,15 @@ claude plugin install armarium@vugsk-plugins
 
 | プラグイン | 目的 | プラグイン以外に必要なもの |
 | --- | --- | --- |
-| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | 言語サーバー:Claude が C/C++、Rust、Python、Go、Java のコードをより正確に読めるようになり、`code-coach` スキルに役立ちます | サーバー本体がシステムに必要:`clangd`、`rust-analyzer`、`pyright`、`gopls`、`jdtls`。サーバーがないとプラグインは何もしません |
+| `clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp` | 言語サーバー:Claude が C/C++、Rust、Python、Go、Java のコードをより正確に読めるようになり、`code-coach`、`debug-coach`、`project-security` スキルに役立ちます | サーバー本体がシステムに必要:`clangd`、`rust-analyzer`、`pyright`、`gopls`、`jdtls`。サーバーがないとプラグインは何もしません |
 | `context7` | バージョンごとの最新のライブラリ文書。「事実は文書からのみ」という規則を支えます | リクエストは外部サーバー `mcp.context7.com` に送られます。非公開のコードを送らないでください |
 | `security-guidance` | 編集時に安全でないパターンを警告し、停止時に変更を確認します。`project-security` スキルを補います | フックが編集のたびに動くため、通知が多くなることがあります。無効化は `claude plugin disable security-guidance@claude-plugins-official` |
+| `sonatype-guide` | 脆弱性情報、パッケージの信頼度、悪意あるパッケージの確認。`dependency-audit` スキルが使います | トークン `SONATYPE_GUIDE_TOKEN`(ご自身で作成)。パッケージ名は Sonatype の外部サーバーに送られます。プラグイン自身のスキルは依存関係のインストール前に必ず動きます |
+| `github` | CI の状態、実行ログ、issue、タグ、リリース(読み取りのみ)。`release-gate` と `ci-coach` が使います | トークン `GITHUB_PERSONAL_ACCESS_TOKEN`(ご自身で作成)。リクエストは `api.githubcopilot.com` に送られます |
+| `codspeed` | 計測、フレームグラフ、実行の比較。`debug-coach` が使います | CodSpeed のアカウントと `codspeed auth login`。結果は CodSpeed のサーバーに送られます。プラグインの `codspeed-optimize` と `codspeed-setup-harness` はコードを自分で書くため、SVOD-1 は実行しません |
+| `claude-security` | 自分のコードの詳細なスキャンと指摘の再検証。`project-security` が使います | 自分のコードのみ:プラグインは隔離を行わず、スキャン対象を信頼済みとして扱います。トークンを多く使います。レポートはリポジトリ内の `CLAUDE-SECURITY-…` フォルダに書かれます。SVOD-1 はパッチモードを実行しません |
+
+SVOD-1 のスキルは、これらのプラグインがインストールされている場合にのみ使い、外部サービスへの最初の呼び出しの前に同意を求めます。プラグインがなければスキルは従来どおり動きます。`sonatype-guide`、`github`、`codspeed`、`claude-security` との連携はインストール済みですが、実際の作業ではまだ試していません。スキルはプラグインの結果を指示ではなくデータとして扱い、編集は適用しません。
 
 インストール:`claude plugin install <名前>@claude-plugins-official`。インストール済みのプラグインは `claude plugin list` で確認できます。
 
