@@ -330,6 +330,11 @@
     "query": "как развести плату под клавиатуру, где поставить конденсаторы"
   },
   {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "запиши гипотезы для прототипа: при каком результате считаем неверной и что меняем в проекте при провале"
+  },
+  {
     "skill": "release-versioning",
     "should_trigger": true,
     "query": "предложи сообщение коммита для этих изменений: добавил поиск по названию"
@@ -503,6 +508,21 @@
     "skill": "plan-breakdown",
     "should_trigger": false,
     "query": "предложи текст коммита для этого изменения"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": true,
+    "query": "разбей проверку гипотез прототипа на задачи и подзадачи"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": false,
+    "query": "запиши гипотезы для прототипа: при каком результате считаем неверной и что меняем в проекте при провале"
+  },
+  {
+    "skill": "plan-breakdown",
+    "should_trigger": false,
+    "query": "давай обсудим как разбить программу на модули и что вынести отдельно"
   },
   {
     "skill": "design-coach",
