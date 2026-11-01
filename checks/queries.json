@@ -573,5 +573,45 @@
     "skill": "pseudocode-writer",
     "should_trigger": false,
     "query": "давай обсудим как разбить программу на модули и что вынести отдельно"
+  },
+  {
+    "skill": "library-guide",
+    "should_trigger": true,
+    "query": "собери справочник по библиотекам, которые будут в моём проекте, можно параллельными субагентами"
+  },
+  {
+    "skill": "subagent-delegation",
+    "should_trigger": true,
+    "query": "нужно ли здесь запускать субагентов или лучше сделать самому"
+  },
+  {
+    "skill": "library-guide",
+    "should_trigger": true,
+    "query": "изучи документацию библиотек из Cargo.toml и сделай по каждой краткую заметку"
+  },
+  {
+    "skill": "library-guide",
+    "should_trigger": true,
+    "query": "составь подробное руководство по tokio по разделам, с источниками"
+  },
+  {
+    "skill": "library-guide",
+    "should_trigger": false,
+    "query": "напиши документацию для пользователей моей cli-утилиты в docs/"
+  },
+  {
+    "skill": "subagent-delegation",
+    "should_trigger": false,
+    "query": "какую библиотеку для разбора json взять в rust и безопасна ли она"
+  },
+  {
+    "skill": "subagent-delegation",
+    "should_trigger": false,
+    "query": "напиши документацию для пользователей моей cli-утилиты в docs/"
+  },
+  {
+    "skill": "subagent-delegation",
+    "should_trigger": true,
+    "query": "разбери параллельно несколько больших модулей проекта, можно запустить субагентов"
   }
 ]
