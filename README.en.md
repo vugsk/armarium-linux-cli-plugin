@@ -104,7 +104,7 @@ Install: `claude plugin install <name>@claude-plugins-official`. Installed plugi
 
 ## How many tokens the plugin takes
 
-This is how many tokens Claude receives at the start of a session, before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-10-31 with Claude Code 2.1.314 using the request "answer in one word: ok", three runs per configuration; the numbers matched for the first two configurations but not for the third (see below). The "no plugins" baseline differs from earlier measurements (15,150, 15,429), probably because of the Claude Code version, so compare the difference, not the absolute numbers. The recommended plugins were connected the same way, with `--plugin-dir` flags from their cache. To repeat it, add up `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` from the `usage` field of the reply.
+This is how many tokens Claude receives at the start of a session, before your first question (system instructions, tool descriptions and skill descriptions). Measured on 2026-11-01 with Claude Code 2.1.316 using the request "answer in one word: ok", three runs per configuration; the numbers matched for the first two configurations but not for the third (see below). The "no plugins" baseline differs from earlier measurements (15,150, 15,429, 15,482), probably because of the Claude Code version, so compare the difference, not the absolute numbers. The recommended plugins were connected the same way, with `--plugin-dir` flags from their cache. To repeat it, add up `input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` from the `usage` field of the reply.
 
 ```
 claude -p "Ответь одним словом: ok" --output-format json --setting-sources project --plugin-dir <plugin folder>
@@ -112,11 +112,11 @@ claude -p "Ответь одним словом: ok" --output-format json --sett
 
 | Configuration | Tokens at session start | Difference from "no plugins" |
 | --- | --- | --- |
-| No plugins | 15,482 | — |
-| SVOD-1 only (26 skills, version 0.7.0) | 23,142 | +7,660 (+49%) |
-| SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 25,126 (two runs of three) or 23,281 (one) | +9,644 (+62%) or +7,799 (+50%) |
+| No plugins | 15,453 | — |
+| SVOD-1 only (28 skills, version 0.9.0) | 23,828 | +8,375 (+54%) |
+| SVOD-1 + recommended (`clangd-lsp`, `rust-analyzer-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `context7`, `security-guidance`) | 25,812, 25,660 and 23,967 (three runs gave different numbers) | from +8,514 (+55%) to +10,359 (+67%) |
 
-- The recommended plugins add either about 140 tokens (23,281) or about 2,000 (25,126) on top of SVOD-1: three runs gave 25,126, 23,281, 25,126. I did not find out why the value jumps; perhaps some LSP plugin or its tool is attached in some runs, but that is my guess. The previous measurement (2026-10-29) gave about 210 tokens, the one before 0.4.0 about 2,000. The other plugins (`sonatype-guide`, `github`, `codspeed`, `claude-security`) are not in the table.
+- The recommended plugins add between 139 and 1,984 tokens on top of SVOD-1: three runs gave 25,812, 25,660 and 23,967. I did not find out why the value jumps; perhaps some LSP plugin or its tool is attached in some runs, but that is my guess. Earlier measurements: 2026-10-31 (25,126, 23,281, 25,126), 2026-10-29 (addition about 210), before 0.4.0 (about 2,000). The plugins `sonatype-guide`, `github`, `codspeed` and `claude-security` are not in the table.
 - The model's context window in this measurement is 1,000,000 tokens, so SVOD-1's difference is about 0.8% of the window.
 - This is only the start of a session. The text of a skill (the body of `SKILL.md` and its references) is loaded when the skill triggers and is not in the table; its cost depends on the skill and the task.
 - Not measured: cost in money and usage on typical tasks. Cached tokens are cheaper, but that depends on your plan.
