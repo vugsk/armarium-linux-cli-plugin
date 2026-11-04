@@ -3,7 +3,7 @@ name: run-audit
 description: Ручной запуск проверки согласованности личных стандартов и скиллов (обёртка над standards-audit). Вызывается только пользователем командой /armarium:run-audit.
 disable-model-invocation: true
 argument-hint: [что проверить дополнительно]
-allowed-tools: Read, Glob, Grep
+allowed-tools: Read, Glob, Grep, Bash(diff -rq *)
 ---
 
 Запусти скилл `standards-audit` и выполни проверку согласованности трёх стандартов в хранилище (корень — из `~/.claude/armarium.json`) и скиллов. Только чтение: ничего не правь, пока пользователь не скажет «исправь». Выдай отчёт таблицей: что проверял, где, результат (согласовано / расхождение / не проверено).

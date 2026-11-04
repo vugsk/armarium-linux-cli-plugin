@@ -35,7 +35,7 @@ STANDARDS=""
 # Решаем, касается ли правка нас. Стандарты проверяем только когда папка известна.
 MATCH=0
 case "$FILE" in
-  "$PLUGIN_SKILLS"/*) MATCH=1 ;;
+  "$PLUGIN_SKILLS"/*|"$PLUGIN_ROOT"/docs/*) MATCH=1 ;;
 esac
 if [ -n "$STANDARDS" ]; then
   case "$FILE" in

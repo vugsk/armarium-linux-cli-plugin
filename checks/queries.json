@@ -275,7 +275,7 @@
     "query": "как лучше отлаживать падение программы на c++, с чего начать"
   },
   {
-    "skill": "code-coach",
+    "skill": "systems-dev-coach",
     "should_trigger": true,
     "query": "хочу написать свой маленький язык программирования, с чего начать и что почитать"
   },
@@ -613,5 +613,160 @@
     "skill": "subagent-delegation",
     "should_trigger": true,
     "query": "разбери параллельно несколько больших модулей проекта, можно запустить субагентов"
+  },
+  {
+    "skill": "project-stages",
+    "should_trigger": true,
+    "query": "заморозь проект lookfs, сейчас нет на него времени"
+  },
+  {
+    "skill": "project-retro",
+    "should_trigger": false,
+    "query": "заморозь проект lookfs, сейчас нет на него времени"
+  },
+  {
+    "skill": "language-guide",
+    "should_trigger": true,
+    "query": "перепиши мои заметки по Rust про времена жизни подробнее, с примерами и ошибками компилятора"
+  },
+  {
+    "skill": "language-guide",
+    "should_trigger": true,
+    "query": "составь подробное руководство по шаблонам C++ в заметки с примерами, которые реально собираются"
+  },
+  {
+    "skill": "language-guide",
+    "should_trigger": true,
+    "query": "напиши заметки по горутинам и каналам в Go для моей документации"
+  },
+  {
+    "skill": "language-guide",
+    "should_trigger": false,
+    "query": "почему borrow checker ругается на мою функцию parse_line, вот ошибка E0502"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": false,
+    "query": "перепиши мои заметки по Rust про времена жизни подробнее, с примерами и ошибками компилятора"
+  },
+  {
+    "skill": "game-dev-coach",
+    "should_trigger": true,
+    "query": "хочу сделать свою 2d игру-рогалик, с чего начать и как устроить игровой цикл"
+  },
+  {
+    "skill": "game-dev-coach",
+    "should_trigger": true,
+    "query": "как сбалансировать урон и здоровье врагов в моей игре, чтобы не было слишком легко"
+  },
+  {
+    "skill": "game-dev-coach",
+    "should_trigger": true,
+    "query": "какой движок взять для небольшой 3d игры под linux, если хочу писать на rust"
+  },
+  {
+    "skill": "game-dev-coach",
+    "should_trigger": false,
+    "query": "как нарисовать треугольник в wgpu, у меня чёрный экран"
+  },
+  {
+    "skill": "systems-dev-coach",
+    "should_trigger": true,
+    "query": "хочу написать свою ОС под x86_64, как устроена загрузка и что делать первым"
+  },
+  {
+    "skill": "systems-dev-coach",
+    "should_trigger": true,
+    "query": "как сделать эмулятор простого 8-битного процессора, как устроить цикл выборки команд"
+  },
+  {
+    "skill": "systems-dev-coach",
+    "should_trigger": true,
+    "query": "хочу написать свой аллокатор памяти на rust, какие бывают виды аллокаторов"
+  },
+  {
+    "skill": "systems-dev-coach",
+    "should_trigger": false,
+    "query": "какой движок взять для небольшой 3d игры под linux, если хочу писать на rust"
+  },
+  {
+    "skill": "graphics-coach",
+    "should_trigger": true,
+    "query": "как нарисовать треугольник в wgpu, у меня чёрный экран"
+  },
+  {
+    "skill": "graphics-coach",
+    "should_trigger": true,
+    "query": "объясни, как работают карты теней и почему у меня полосы на объектах"
+  },
+  {
+    "skill": "graphics-coach",
+    "should_trigger": true,
+    "query": "как рисовать текст на gpu, что такое атлас глифов"
+  },
+  {
+    "skill": "graphics-coach",
+    "should_trigger": false,
+    "query": "что такое кватернион и почему он лучше углов эйлера"
+  },
+  {
+    "skill": "math-coach",
+    "should_trigger": true,
+    "query": "что такое кватернион и почему он лучше углов эйлера"
+  },
+  {
+    "skill": "math-coach",
+    "should_trigger": true,
+    "query": "как найти пересечение луча и треугольника, объясни математику"
+  },
+  {
+    "skill": "math-coach",
+    "should_trigger": true,
+    "query": "почему 0.1 + 0.2 не равно 0.3 и как правильно сравнивать float"
+  },
+  {
+    "skill": "math-coach",
+    "should_trigger": false,
+    "query": "объекты проваливаются сквозь стены в моей игре на большой скорости"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": true,
+    "query": "объекты проваливаются сквозь стены в моей игре на большой скорости"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": true,
+    "query": "почему моя симуляция пружин взрывается через несколько секунд"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": true,
+    "query": "как посчитать импульс при столкновении двух шаров с разной массой"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": false,
+    "query": "как нарисовать треугольник в wgpu, у меня чёрный экран"
+  },
+  {
+    "skill": "code-coach",
+    "should_trigger": false,
+    "query": "хочу написать свою ОС под x86_64, как устроена загрузка и что делать первым"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": true,
+    "query": "хочу написать свой физический движок на rust, с чего начать и в каком порядке делать части"
+  },
+  {
+    "skill": "physics-coach",
+    "should_trigger": true,
+    "query": "как смоделировать жидкость на сетке через уравнения навье-стокса"
+  },
+  {
+    "skill": "math-coach",
+    "should_trigger": true,
+    "query": "как проверить порядок сходимости численного метода и что такое жёсткая система"
   }
 ]
